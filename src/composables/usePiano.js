@@ -16,8 +16,8 @@ const OCTAVE_MAP = {
 const MAJOR_SOLFEGE = ['Do', 'Re', 'Mi', 'Fa', 'Sol', 'La', 'Ti', 'Do']
 const MINOR_SOLFEGE = ['La', 'Ti', 'Do', 'Re', 'Mi', 'Fa', 'Sol', 'La'] // La-based minor
 
-// Salamander Grand Piano samples
-const SAMPLE_BASE_URL = 'https://tonejs.github.io/audio/salamander/'
+// MusyngKite Acoustic Grand Piano samples
+const SAMPLE_BASE_URL = 'https://gleitz.github.io/midi-js-soundfonts/MusyngKite/acoustic_grand_piano-mp3/'
 
 export function usePiano() {
   const isLoaded = ref(false)
@@ -27,40 +27,36 @@ export function usePiano() {
 
   let sampler = null
   let limiter = null
-  let compressor = null
-  let gain = null
 
   async function initPiano() {
     if (sampler) return
 
     return new Promise((resolve) => {
-      // Audio chain: sampler -> gain -> compressor -> limiter -> destination
-      gain = new Tone.Gain(0.6).toDestination()
-      compressor = new Tone.Compressor(-20, 4).connect(gain)
-      limiter = new Tone.Limiter(-6).connect(compressor)
+      // Light limiter just to prevent clipping
+      limiter = new Tone.Limiter(-1).toDestination()
 
       sampler = new Tone.Sampler({
         urls: {
           A0: 'A0.mp3',
           C1: 'C1.mp3',
-          'D#1': 'Ds1.mp3',
-          'F#1': 'Fs1.mp3',
+          Eb1: 'Eb1.mp3',
+          Gb1: 'Gb1.mp3',
           A1: 'A1.mp3',
           C2: 'C2.mp3',
-          'D#2': 'Ds2.mp3',
-          'F#2': 'Fs2.mp3',
+          Eb2: 'Eb2.mp3',
+          Gb2: 'Gb2.mp3',
           A2: 'A2.mp3',
           C3: 'C3.mp3',
-          'D#3': 'Ds3.mp3',
-          'F#3': 'Fs3.mp3',
+          Eb3: 'Eb3.mp3',
+          Gb3: 'Gb3.mp3',
           A3: 'A3.mp3',
           C4: 'C4.mp3',
-          'D#4': 'Ds4.mp3',
-          'F#4': 'Fs4.mp3',
+          Eb4: 'Eb4.mp3',
+          Gb4: 'Gb4.mp3',
           A4: 'A4.mp3',
           C5: 'C5.mp3',
-          'D#5': 'Ds5.mp3',
-          'F#5': 'Fs5.mp3',
+          Eb5: 'Eb5.mp3',
+          Gb5: 'Gb5.mp3',
           A5: 'A5.mp3',
         },
         release: 1,
@@ -160,7 +156,7 @@ export function usePiano() {
 
     for (const chord of cadence) {
       chord.forEach(note => {
-        sampler.triggerAttackRelease(note, chordDuration, time, 0.25)
+        sampler.triggerAttackRelease(note, chordDuration, time, 0.4)
       })
       time += chordGap
     }
@@ -170,7 +166,7 @@ export function usePiano() {
     const mysteryNote = scaleNotes[noteIndex]
     const solfege = mode === 'major' ? MAJOR_SOLFEGE[noteIndex] : MINOR_SOLFEGE[noteIndex]
     console.log(`[Debug] Key: ${key} ${mode} | Note: ${mysteryNote} (${solfege})`)
-    sampler.triggerAttackRelease(mysteryNote, 1, time, 0.5)
+    sampler.triggerAttackRelease(mysteryNote, 1, time, 0.7)
 
     const totalDuration = (cadence.length * chordGap) + 0.3 + 1
     setTimeout(() => {
@@ -183,7 +179,7 @@ export function usePiano() {
 
     const scaleNotes = getScaleNotes(key, mode, octave)
     const note = scaleNotes[noteIndex]
-    sampler.triggerAttackRelease(note, 1, Tone.now(), 0.5)
+    sampler.triggerAttackRelease(note, 1, Tone.now(), 0.7)
   }
 
   function playScaleNote(noteIndex, key, mode, octave = 4, duration = 0.4) {
@@ -191,7 +187,7 @@ export function usePiano() {
 
     const scaleNotes = getScaleNotes(key, mode, octave)
     const note = scaleNotes[noteIndex]
-    sampler.triggerAttackRelease(note, duration, Tone.now(), 0.5)
+    sampler.triggerAttackRelease(note, duration, Tone.now(), 0.7)
   }
 
   function getRandomNoteIndex() {

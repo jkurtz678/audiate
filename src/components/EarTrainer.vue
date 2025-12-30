@@ -196,14 +196,13 @@ function handleGuess(index) {
     }
 
     if (walkToRoot.value) {
-      // Play walk to root, then start new round
+      // Play walk to root immediately, then start new round
       const sequence = getWalkSequence(currentNoteIndex.value)
-      setTimeout(async () => {
-        feedbackIndex.value = null
-        feedbackType.value = null
-        await playWalkSequence(sequence)
+      feedbackIndex.value = null
+      feedbackType.value = null
+      playWalkSequence(sequence).then(() => {
         startNewRound()
-      }, 400)
+      })
     } else {
       setTimeout(() => {
         startNewRound()
