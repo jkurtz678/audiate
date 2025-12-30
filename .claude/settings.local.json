@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm uninstall:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss init -p)",
+      "Bash(./node_modules/.bin/tailwindcss:*)",
+      "Bash(npx shadcn-vue@latest init)",
+      "Bash(npx shadcn-vue@latest init:*)",
+      "Bash(npx shadcn-vue@latest add:*)"
+    ]
+  }
+}

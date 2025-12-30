@@ -1,0 +1,208 @@
+import { ref } from 'vue'
+import * as Tone from 'tone'
+import { Note, Scale } from 'tonal'
+
+// All possible root notes
+const ALL_KEYS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+
+// Octave mapping
+const OCTAVE_MAP = {
+  low: 3,
+  middle: 4,
+  high: 5,
+}
+
+// Solfège labels
+const MAJOR_SOLFEGE = ['Do', 'Re', 'Mi', 'Fa', 'Sol', 'La', 'Ti', 'Do']
+const MINOR_SOLFEGE = ['La', 'Ti', 'Do', 'Re', 'Mi', 'Fa', 'Sol', 'La'] // La-based minor
+
+// Salamander Grand Piano samples
+const SAMPLE_BASE_URL = 'https://tonejs.github.io/audio/salamander/'
+
+export function usePiano() {
+  const isLoaded = ref(false)
+  const isPlaying = ref(false)
+  const currentKey = ref(null)
+  const currentMode = ref(null)
+
+  let sampler = null
+
+  async function initPiano() {
+    if (sampler) return
+
+    return new Promise((resolve) => {
+      sampler = new Tone.Sampler({
+        urls: {
+          A0: 'A0.mp3',
+          C1: 'C1.mp3',
+          'D#1': 'Ds1.mp3',
+          'F#1': 'Fs1.mp3',
+          A1: 'A1.mp3',
+          C2: 'C2.mp3',
+          'D#2': 'Ds2.mp3',
+          'F#2': 'Fs2.mp3',
+          A2: 'A2.mp3',
+          C3: 'C3.mp3',
+          'D#3': 'Ds3.mp3',
+          'F#3': 'Fs3.mp3',
+          A3: 'A3.mp3',
+          C4: 'C4.mp3',
+          'D#4': 'Ds4.mp3',
+          'F#4': 'Fs4.mp3',
+          A4: 'A4.mp3',
+          C5: 'C5.mp3',
+          'D#5': 'Ds5.mp3',
+          'F#5': 'Fs5.mp3',
+          A5: 'A5.mp3',
+        },
+        release: 1,
+        baseUrl: SAMPLE_BASE_URL,
+        onload: () => {
+          isLoaded.value = true
+          resolve()
+        },
+      }).toDestination()
+    })
+  }
+
+  async function startAudioContext() {
+    await Tone.start()
+    await initPiano()
+  }
+
+  function getRandomKey() {
+    return ALL_KEYS[Math.floor(Math.random() * ALL_KEYS.length)]
+  }
+
+  function getScaleNotes(key, mode, octave = 4) {
+    const scaleType = mode === 'major' ? 'major' : 'minor'
+    const scale = Scale.get(`${key} ${scaleType}`)
+    const tonic = `${key}${octave}`
+
+    // Use intervals to transpose from tonic - this handles octave wrapping correctly
+    const scaleNotes = scale.intervals.map(interval => {
+      return Note.transpose(tonic, interval)
+    })
+
+    // Add high tonic (octave above)
+    scaleNotes.push(Note.transpose(tonic, '8P'))
+
+    return scaleNotes
+  }
+
+  function getRandomOctave(octaves) {
+    const octave = octaves[Math.floor(Math.random() * octaves.length)]
+    return OCTAVE_MAP[octave]
+  }
+
+  function getMajorCadence(key) {
+    // I -> V -> I with smooth voice leading
+    const root = `${key}4`
+    const third = Note.transpose(root, '3M')
+    const fifth = Note.transpose(root, '5P')
+
+    // V chord (in first inversion for voice leading)
+    const vRoot = Note.transpose(root, '5P')
+    const vThird = Note.transpose(vRoot, '3M') // leading tone
+    const vThirdLower = Note.transpose(vThird, '-8P') // octave down
+    const vFifth = Note.transpose(vRoot, '5P')
+    const vFifthLower = Note.transpose(vFifth, '-8P')
+
+    return [
+      [root, third, fifth],                           // I
+      [vThirdLower, vFifthLower, vRoot],              // V (B3, D4, G4 in C)
+      [root, third, fifth],                           // I
+    ]
+  }
+
+  function getMinorCadence(key) {
+    // i -> V -> i (minor i, major V)
+    const root = `${key}4`
+    const third = Note.transpose(root, '3m') // minor third
+    const fifth = Note.transpose(root, '5P')
+
+    // V chord (major, with raised 7th for harmonic minor sound)
+    const vRoot = Note.transpose(root, '5P')
+    const vThird = Note.transpose(vRoot, '3M') // major third (raised 7th of the scale)
+    const vThirdLower = Note.transpose(vThird, '-8P')
+    const vFifth = Note.transpose(vRoot, '5P')
+    const vFifthLower = Note.transpose(vFifth, '-8P')
+
+    return [
+      [root, third, fifth],                           // i
+      [vThirdLower, vFifthLower, vRoot],              // V
+      [root, third, fifth],                           // i
+    ]
+  }
+
+  async function playCadenceAndNote(noteIndex, key, mode, octave = 4) {
+    if (!isLoaded.value || isPlaying.value) return
+
+    isPlaying.value = true
+    currentKey.value = key
+    currentMode.value = mode
+
+    const cadence = mode === 'major' ? getMajorCadence(key) : getMinorCadence(key)
+    const scaleNotes = getScaleNotes(key, mode, octave)
+
+    const chordDuration = 0.5
+    const chordGap = 0.6
+
+    let time = Tone.now()
+
+    for (const chord of cadence) {
+      chord.forEach(note => {
+        sampler.triggerAttackRelease(note, chordDuration, time, 0.6)
+      })
+      time += chordGap
+    }
+
+    time += 0.3
+
+    const mysteryNote = scaleNotes[noteIndex]
+    const solfege = mode === 'major' ? MAJOR_SOLFEGE[noteIndex] : MINOR_SOLFEGE[noteIndex]
+    console.log(`[Debug] Key: ${key} ${mode} | Note: ${mysteryNote} (${solfege})`)
+    sampler.triggerAttackRelease(mysteryNote, 1, time, 0.7)
+
+    const totalDuration = (cadence.length * chordGap) + 0.3 + 1
+    setTimeout(() => {
+      isPlaying.value = false
+    }, totalDuration * 1000)
+  }
+
+  function playNoteOnly(noteIndex, key, mode, octave = 4) {
+    if (!isLoaded.value || isPlaying.value) return
+
+    const scaleNotes = getScaleNotes(key, mode, octave)
+    const note = scaleNotes[noteIndex]
+    sampler.triggerAttackRelease(note, 1, Tone.now(), 0.7)
+  }
+
+  function getRandomNoteIndex() {
+    return Math.floor(Math.random() * 8)
+  }
+
+  function getSolfege(mode) {
+    return mode === 'major' ? MAJOR_SOLFEGE : MINOR_SOLFEGE
+  }
+
+  function formatKeyDisplay(key, mode) {
+    const modeName = mode === 'major' ? 'Major' : 'Minor'
+    return `${key} ${modeName}`
+  }
+
+  return {
+    isLoaded,
+    isPlaying,
+    currentKey,
+    currentMode,
+    startAudioContext,
+    playCadenceAndNote,
+    playNoteOnly,
+    getRandomNoteIndex,
+    getRandomKey,
+    getRandomOctave,
+    getSolfege,
+    formatKeyDisplay,
+  }
+}
