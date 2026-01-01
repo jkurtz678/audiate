@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ArrowLeft, Settings } from 'lucide-vue-next'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -16,10 +16,16 @@ import { Label } from '@/components/ui/label'
 
 const router = useRouter()
 
-const STORAGE_KEY = 'ear-trainer-settings'
+const STORAGE_KEY = 'melodic-dictation-settings'
 
-// Setup state
-const numberOfQuestions = ref(10)
+// Main settings (visible on page)
+const numberOfNotes = ref(8)
+const isInfinite = ref(false)
+const speed = ref(1)
+const speedSlider = ref(100) // 0-200, with 100 = 1x
+
+// Modal settings
+const continueOnIncorrect = ref(false)
 const keyMode = ref('fixed')
 const cadenceType = ref('major')
 const octaves = ref({
@@ -27,12 +33,51 @@ const octaves = ref({
   middle: true,
   high: false,
 })
-const walkToRoot = ref(false)
 const showSettingsModal = ref(false)
 
-// Settings summary for display - returns array for custom rendering
+// Convert slider value (0-200) to speed (0.2-3)
+function sliderToSpeed(sliderValue) {
+  if (sliderValue <= 100) {
+    // 0-100 maps to 0.2-1
+    return 0.2 + (sliderValue / 100) * 0.8
+  } else {
+    // 100-200 maps to 1-3
+    return 1 + ((sliderValue - 100) / 100) * 2
+  }
+}
+
+// Convert speed (0.2-3) to slider value (0-200)
+function speedToSlider(speedValue) {
+  if (speedValue <= 1) {
+    // 0.2-1 maps to 0-100
+    return ((speedValue - 0.2) / 0.8) * 100
+  } else {
+    // 1-3 maps to 100-200
+    return 100 + ((speedValue - 1) / 2) * 100
+  }
+}
+
+// Update speed when slider changes
+watch(speedSlider, (newValue) => {
+  speed.value = Math.round(sliderToSpeed(newValue) * 10) / 10
+})
+
+// Update slider when speed is loaded
+watch(speed, (newValue) => {
+  const expectedSlider = speedToSlider(newValue)
+  if (Math.abs(speedSlider.value - expectedSlider) > 0.5) {
+    speedSlider.value = Math.round(expectedSlider)
+  }
+}, { immediate: true })
+
+const speedDisplay = computed(() => `${speed.value.toFixed(1)}x`)
+
+// Settings summary
 const settingsSummaryParts = computed(() => {
   const parts = []
+
+  // On incorrect guess
+  parts.push(continueOnIncorrect.value ? 'Skip incorrect' : 'Retry until correct')
 
   // Key mode + Cadence type combined
   const keyModeText = keyMode.value === 'fixed' ? 'Fixed' : 'Random'
@@ -52,11 +97,6 @@ const settingsSummaryParts = computed(() => {
     parts.push(selectedOctaves.join(' & ') + ' octaves')
   }
 
-  // Walk to root
-  if (walkToRoot.value) {
-    parts.push('Walk to root')
-  }
-
   return parts
 })
 
@@ -66,15 +106,13 @@ onMounted(() => {
   if (saved) {
     try {
       const settings = JSON.parse(saved)
-      if (settings.numberOfQuestions) {
-        // Clamp to valid range (5-50, steps of 5)
-        const num = Math.max(5, Math.min(50, settings.numberOfQuestions))
-        numberOfQuestions.value = Math.round(num / 5) * 5
-      }
+      if (settings.numberOfNotes) numberOfNotes.value = settings.numberOfNotes
+      if (settings.isInfinite !== undefined) isInfinite.value = settings.isInfinite
+      if (settings.speed) speed.value = settings.speed
+      if (settings.continueOnIncorrect !== undefined) continueOnIncorrect.value = settings.continueOnIncorrect
       if (settings.keyMode) keyMode.value = settings.keyMode
       if (settings.cadenceType) cadenceType.value = settings.cadenceType
       if (settings.octaves) octaves.value = settings.octaves
-      if (settings.walkToRoot !== undefined) walkToRoot.value = settings.walkToRoot
     } catch (e) {
       console.warn('Failed to load settings from localStorage')
     }
@@ -107,17 +145,19 @@ function handleStart() {
 
   // Save to localStorage
   const settings = {
-    numberOfQuestions: numberOfQuestions.value,
+    numberOfNotes: numberOfNotes.value,
+    isInfinite: isInfinite.value,
+    speed: speed.value,
+    continueOnIncorrect: continueOnIncorrect.value,
     keyMode: keyMode.value,
     cadenceType: cadenceType.value,
     octaves: octaves.value,
-    walkToRoot: walkToRoot.value,
   }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
 
-  // Navigate to Layout 3
+  // Navigate to melodic dictation (you'll need to update the route)
   router.push({
-    name: 'scale-degrees-exercise-layout3',
+    name: 'melodic-dictation',
     state: { settings }
   })
 }
@@ -132,6 +172,21 @@ function handleStart() {
       </DialogHeader>
 
       <div class="flex flex-col gap-6 mb-6">
+        <!-- On Incorrect Guess -->
+        <div class="flex flex-col gap-3">
+          <Label class="text-sm font-normal text-muted-foreground tracking-caps uppercase">On Incorrect Guess</Label>
+          <RadioGroup v-model="continueOnIncorrect" class="flex gap-6">
+            <div class="flex items-center gap-2">
+              <RadioGroupItem id="retry" :value="false" />
+              <Label for="retry" class="font-light cursor-pointer">Keep guessing</Label>
+            </div>
+            <div class="flex items-center gap-2">
+              <RadioGroupItem id="continue" :value="true" />
+              <Label for="continue" class="font-light cursor-pointer">Move to next</Label>
+            </div>
+          </RadioGroup>
+        </div>
+
         <div class="flex flex-col gap-3">
           <Label class="text-sm font-normal text-muted-foreground tracking-caps uppercase">Key Mode</Label>
           <RadioGroup v-model="keyMode" class="flex gap-6">
@@ -177,14 +232,6 @@ function handleStart() {
             </div>
           </div>
         </div>
-
-        <div class="flex flex-col gap-3">
-          <Label class="text-sm font-normal text-muted-foreground tracking-caps uppercase">After Correct Guess</Label>
-          <div class="flex items-center gap-2">
-            <Checkbox id="walkToRoot" v-model="walkToRoot" />
-            <Label for="walkToRoot" class="font-light cursor-pointer">Play walk to root</Label>
-          </div>
-        </div>
       </div>
 
       <DialogFooter>
@@ -205,26 +252,56 @@ function handleStart() {
 
       <!-- Title -->
       <div class="title-section">
-        <h1 class="title">Functional Scale Degrees</h1>
+        <h1 class="title">Melodic Dictation</h1>
         <p class="subtitle">Setup your practice session</p>
       </div>
 
       <!-- Streamlined Settings -->
       <div class="settings-simple">
-        <!-- Number of Questions Card -->
+        <!-- Number of Notes Card -->
         <div class="config-card">
           <div class="config-content">
-            <span class="config-label">Number of Questions</span>
+            <span class="config-label">Number of Notes</span>
+            <div class="notes-container">
+              <div class="checkbox-item">
+                <Checkbox id="infinite" v-model="isInfinite" />
+                <Label for="infinite" class="checkbox-label">Infinite</Label>
+              </div>
+              <div v-if="!isInfinite" class="number-input-group">
+                <input
+                  v-model.number="numberOfNotes"
+                  type="number"
+                  min="2"
+                  max="100"
+                  class="number-input-inline"
+                />
+                <span class="notes-label">notes</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Speed Card -->
+        <div class="config-card">
+          <div class="config-content">
+            <div class="speed-header">
+              <span class="config-label">Speed</span>
+              <span class="speed-value">{{ speedDisplay }}</span>
+            </div>
             <div class="slider-container">
               <input
-                v-model.number="numberOfQuestions"
+                v-model.number="speedSlider"
                 type="range"
-                min="5"
-                max="50"
-                step="5"
+                min="0"
+                max="200"
+                step="1"
                 class="slider"
               />
-              <span class="slider-value">{{ numberOfQuestions }}</span>
+            </div>
+            <div class="speed-labels">
+              <span style="width: 23px;">0.2x</span>
+              <span style="width: 23px; text-align: center">1x</span>
+              <span style="width: 23px; text-align: right">3x</span>
             </div>
           </div>
         </div>
@@ -349,7 +426,7 @@ function handleStart() {
 .config-content {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   flex: 1;
 }
 
@@ -374,6 +451,63 @@ function handleStart() {
   color: #B8956D;
   font-size: 1.2rem;
   font-weight: 500;
+}
+
+.notes-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-label {
+  font-weight: 300;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.number-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.number-input-inline {
+  border: none;
+  background: transparent;
+  color: #444;
+  font-size: 0.95rem;
+  font-weight: 300;
+  padding: 0;
+  width: 50px;
+  outline: none;
+}
+
+.number-input-inline:focus {
+  color: #B8956D;
+}
+
+.notes-label {
+  font-size: 0.85rem;
+  color: #888;
+  font-weight: 300;
+}
+
+.speed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.speed-value {
+  font-size: 0.95rem;
+  color: #444;
+  font-weight: 400;
 }
 
 .slider-container {
@@ -424,12 +558,12 @@ function handleStart() {
   transform: scale(1.1);
 }
 
-.slider-value {
-  font-size: 0.95rem;
-  color: #444;
-  font-weight: 400;
-  min-width: 30px;
-  text-align: right;
+.speed-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 300;
 }
 
 .config-icon {

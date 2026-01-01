@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LandingPage from '../components/LandingPage.vue'
 import EarTrainer from '../components/EarTrainer.vue'
 import MelodicDictation from '../components/MelodicDictation.vue'
+import MelodicDictationSetupPage from '../components/MelodicDictationSetupPage.vue'
 import ScaleDegreesSetup from '../components/ScaleDegreesSetup.vue'
 import ScaleDegreesResults from '../components/ScaleDegreesResults.vue'
 import ScaleDegreesExercise_Layout1 from '../components/ScaleDegreesExercise_Layout1.vue'
@@ -45,6 +46,12 @@ const routes = [
     path: '/scale-degrees/results',
     name: 'scale-degrees-results',
     component: ScaleDegreesResults,
+  },
+  // Melodic Dictation routes
+  {
+    path: '/melodic-dictation/setup',
+    name: 'melodic-dictation-setup',
+    component: MelodicDictationSetupPage,
   },
   {
     path: '/melodic-dictation',

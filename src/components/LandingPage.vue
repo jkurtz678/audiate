@@ -8,7 +8,7 @@ function goToScaleDegrees() {
 }
 
 function goToMelodicDictation() {
-  router.push('/melodic-dictation')
+  router.push('/melodic-dictation/setup')
 }
 </script>
 

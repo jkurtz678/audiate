@@ -53,22 +53,26 @@ const showSettings = ref(false)
 
 const solfege = computed(() => getSolfege(cadenceType.value))
 
-const settingsSummary = computed(() => {
-  const keyModeText = keyMode.value === 'fixed' ? 'Fixed' : 'Random'
-  const modeText = cadenceType.value === 'major' ? 'major' : 'minor'
+const settingsSummaryParts = computed(() => {
+  const parts = []
 
-  let octaveText
+  // Key mode + Cadence type combined
+  const keyModeText = keyMode.value === 'fixed' ? 'Fixed' : 'Random'
+  const modeText = cadenceType.value === 'major' ? 'Major' : 'Minor'
+  parts.push(`${keyModeText} ${modeText}`)
+
+  // Octaves
   if (octaves.value.length === 3) {
-    octaveText = 'All octaves'
+    parts.push('All octaves')
   } else if (octaves.value.length === 1) {
     const octaveName = octaves.value[0].charAt(0).toUpperCase() + octaves.value[0].slice(1)
-    octaveText = `${octaveName} octave`
-  } else {
+    parts.push(`${octaveName} octave`)
+  } else if (octaves.value.length > 0) {
     const octaveNames = octaves.value.map(o => o.charAt(0).toUpperCase() + o.slice(1))
-    octaveText = octaveNames.join(' & ') + ' octaves'
+    parts.push(octaveNames.join(' & ') + ' octaves')
   }
 
-  return `${keyModeText} ${modeText} · ${octaveText}`
+  return parts
 })
 
 // Load settings and start
@@ -280,7 +284,12 @@ function handleSettingsDone() {
 
       <!-- Settings Summary + Score combined -->
       <div class="info-bar">
-        <div class="settings-summary">{{ settingsSummary }}</div>
+        <div class="settings-summary">
+          <template v-for="(part, index) in settingsSummaryParts" :key="index">
+            <span>{{ part }}</span>
+            <span v-if="index < settingsSummaryParts.length - 1" class="summary-separator">·</span>
+          </template>
+        </div>
         <div class="score-compact">
           <span class="score-label">Score:</span>
           <span class="score-correct">{{ correctCount }}</span>
@@ -438,6 +447,15 @@ function handleSettingsDone() {
   color: #888;
   font-size: 0.9rem;
   font-weight: 300;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summary-separator {
+  color: #B8956D;
+  font-size: 1.2rem;
+  font-weight: 500;
 }
 
 .score-compact {

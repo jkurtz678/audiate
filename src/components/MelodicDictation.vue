@@ -1,9 +1,8 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { Settings, ArrowLeft, RotateCcw, Square, Play, Pause } from 'lucide-vue-next'
+import { ArrowLeft, RotateCcw, Square, Play, Pause } from 'lucide-vue-next'
 import { usePiano } from '@/composables/usePiano'
-import MelodicDictationSetup from '@/components/MelodicDictationSetup.vue'
 
 const router = useRouter()
 
@@ -21,7 +20,6 @@ const {
 const STORAGE_KEY = 'melodic-dictation-settings'
 
 // Setup state
-const showSetup = ref(false)
 const numberOfNotes = ref(8)
 const isInfinite = ref(false)
 const speed = ref(1)
@@ -132,17 +130,6 @@ onMounted(() => {
 onUnmounted(() => {
   stopPlayback()
 })
-
-function handleSetupStart(settings) {
-  numberOfNotes.value = settings.isInfinite ? Infinity : settings.numberOfNotes
-  isInfinite.value = settings.isInfinite
-  speed.value = settings.speed
-  continueOnIncorrect.value = settings.continueOnIncorrect
-  keyMode.value = settings.keyMode
-  cadenceType.value = settings.cadenceType
-  octaves.value = settings.octaves
-  showSetup.value = false
-}
 
 function generateSequence(length) {
   const seq = []
@@ -393,18 +380,13 @@ function getNoteStatus(index) {
 </script>
 
 <template>
-  <MelodicDictationSetup :open="showSetup" @start="handleSetupStart" @close="showSetup = false" />
-
   <div class="page">
     <div class="card">
       <!-- Header -->
       <div class="header">
-        <button class="back-btn" @click="router.push('/')">
+        <button class="back-btn" @click="router.push({ name: 'melodic-dictation-setup' })">
           <ArrowLeft :size="20" />
           <span>Back</span>
-        </button>
-        <button class="settings-btn" @click="showSetup = true">
-          <Settings :size="20" />
         </button>
       </div>
 
