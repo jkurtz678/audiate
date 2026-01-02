@@ -195,7 +195,15 @@ onMounted(async () => {
     }
   }
 
-  // Auto-start the exercise
+  // Auto-start the exercise (with audio context check)
+  const audioStarted = await startAudioContext()
+
+  if (!audioStarted) {
+    // Browser blocked autoplay - redirect to setup for user interaction
+    router.push({ name: 'melodic-dictation-setup' })
+    return
+  }
+
   await handleStart()
 })
 

@@ -79,12 +79,30 @@ export function usePiano() {
       try {
         navigator.audioSession.type = 'playback'
       } catch (e) {
-        console.warn('Could not set audio session type:', e)
+        // Silently ignore - not critical
       }
     }
 
-    await Tone.start()
+    // Try to resume the audio context with a timeout
+    // Tone.start() hangs forever if browser blocks autoplay, so we race it
+    const startPromise = Tone.start()
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), 500)
+    )
+
+    try {
+      await Promise.race([startPromise, timeoutPromise])
+    } catch (e) {
+      // Timeout or error - check state to determine if blocked
+    }
+
+    // If still suspended, browser blocked autoplay
+    if (Tone.context.state !== 'running') {
+      return false
+    }
+
     await initPiano()
+    return true
   }
 
   function getRandomKey() {
@@ -177,8 +195,6 @@ export function usePiano() {
     time += 0.3
 
     const mysteryNote = scaleNotes[noteIndex]
-    const solfege = mode === 'major' ? MAJOR_SOLFEGE[noteIndex] : MINOR_SOLFEGE[noteIndex]
-    console.log(`[Debug] Key: ${key} ${mode} | Note: ${mysteryNote} (${solfege})`)
     sampler.triggerAttackRelease(mysteryNote, 1, time, 0.7)
 
     // Account for release time (1s) in addition to note duration

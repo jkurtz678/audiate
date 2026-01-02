@@ -125,7 +125,13 @@ onMounted(async () => {
     currentKey.value = getRandomKey()
   }
 
-  await startAudioContext()
+  const audioStarted = await startAudioContext()
+
+  if (!audioStarted) {
+    router.push({ name: 'scale-degrees-setup' })
+    return
+  }
+
   startNewRound()
 })
 
