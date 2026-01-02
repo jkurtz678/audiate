@@ -336,6 +336,9 @@ function playNextNote() {
 
     playScaleNote(noteIndex, currentKey.value, cadenceType.value, octave, 0.5)
 
+    // Record when this note was played (for thinking time calculation)
+    notePlayedTimes.value[playedUpTo.value] = Date.now()
+
     // Mark that first note has been played
     if (playedUpTo.value === 0) {
       hasPlayedFirstNote.value = true
@@ -426,6 +429,10 @@ async function handleReplay() {
         currentlyPlayingIndex.value = playedUpTo.value
 
         playScaleNote(noteIndex, currentKey.value, cadenceType.value, octave, 0.5)
+
+        // Update the timestamp for this note (for thinking time calculation on replay)
+        notePlayedTimes.value[playedUpTo.value] = Date.now()
+
         playedUpTo.value++
 
         if (playedUpTo.value < previousPlayedUpTo) {
@@ -495,7 +502,10 @@ function handleGuess(guessIndex) {
       guesses.value[currentGuessIndex.value] = { guessedCorrectly: true }
       correctCount.value++
       const noteOctave = sequence.value[currentGuessIndex.value].octave
-      recordStat('melodicDictation', cadenceType.value, correctNoteIndex, true, noteOctave)
+      // Calculate thinking time (time from note played to guess made)
+      const notePlayedTime = notePlayedTimes.value[currentGuessIndex.value]
+      const thinkingTime = notePlayedTime ? Date.now() - notePlayedTime : null
+      recordStat('melodicDictation', cadenceType.value, correctNoteIndex, true, noteOctave, thinkingTime)
       currentGuessIndex.value++
     }
 
@@ -509,7 +519,10 @@ function handleGuess(guessIndex) {
     if (!hadPreviousWrongGuess) {
       incorrectCount.value++
       const noteOctave = sequence.value[currentGuessIndex.value].octave
-      recordStat('melodicDictation', cadenceType.value, correctNoteIndex, false, noteOctave)
+      // Calculate thinking time (time from note played to guess made)
+      const notePlayedTime = notePlayedTimes.value[currentGuessIndex.value]
+      const thinkingTime = notePlayedTime ? Date.now() - notePlayedTime : null
+      recordStat('melodicDictation', cadenceType.value, correctNoteIndex, false, noteOctave, thinkingTime)
       guesses.value[currentGuessIndex.value] = { guessedCorrectly: false, hasGuessed: true }
     }
 
