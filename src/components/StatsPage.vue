@@ -207,7 +207,6 @@ function getCorrectWidth(note) {
   max-width: 900px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
 }
 
 .header {
@@ -249,6 +248,7 @@ function getCorrectWidth(note) {
 
 .title-mobile {
   display: none;
+  margin-bottom: 12px;
 }
 
 .title {
@@ -267,7 +267,7 @@ function getCorrectWidth(note) {
 /* Two-column layout for desktop */
 .main-content {
   display: flex;
-  gap: 24px;
+  gap: 16px;
   align-items: flex-start;
 }
 
@@ -284,7 +284,6 @@ function getCorrectWidth(note) {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
 }
 
 .filters {
@@ -375,6 +374,7 @@ function getCorrectWidth(note) {
   border-radius: 8px;
   padding: 16px 20px;
   width: 100%;
+  margin-bottom: 12px;
 }
 
 .chart-row {
