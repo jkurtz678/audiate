@@ -586,7 +586,7 @@ function getNoteSolfege(index) {
             min="0"
             max="200"
             step="1"
-            class="w-full accent-primary"
+            class="slider"
           />
           <div class="relative text-xs text-muted-foreground font-light h-4">
             <span class="absolute left-0">0.2x (slower)</span>
@@ -1209,5 +1209,47 @@ function getNoteSolfege(index) {
 
 .pause-btn:hover {
   background: #F57C00;
+}
+
+.slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #e0dcd8;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  touch-action: manipulation;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #B8956D;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: #A6845E;
+  transform: scale(1.1);
+}
+
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #B8956D;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.slider::-moz-range-thumb:hover {
+  background: #A6845E;
+  transform: scale(1.1);
 }
 </style>

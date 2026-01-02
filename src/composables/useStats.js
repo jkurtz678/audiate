@@ -165,10 +165,13 @@ function getFilteredStats(exercise, mode, options = {}) {
     return true
   })
 
-  // Aggregate by note index
+  // Aggregate by note index (merge high Do/La with low Do/La)
   const result = []
-  for (let i = 0; i < 8; i++) {
-    const noteAttempts = filtered.filter(a => a.noteIndex === i)
+  for (let i = 0; i < 7; i++) {
+    // For index 0 (low Do/La), also include index 7 (high Do/La)
+    const noteAttempts = i === 0
+      ? filtered.filter(a => a.noteIndex === 0 || a.noteIndex === 7)
+      : filtered.filter(a => a.noteIndex === i)
     const correct = noteAttempts.filter(a => a.correct).length
     const incorrect = noteAttempts.filter(a => !a.correct).length
     const total = correct + incorrect

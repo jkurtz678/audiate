@@ -27,7 +27,7 @@ const octaves = ref({
   middle: true,
   high: false,
 })
-const walkToRoot = ref(false)
+const walkToRoot = ref(true)
 const showSettingsModal = ref(false)
 
 // Settings summary for display - returns array for custom rendering
@@ -232,7 +232,7 @@ function handleStart() {
         <!-- Test Configuration Card -->
         <div class="config-card clickable" @click="showSettingsModal = true">
           <div class="config-content">
-            <span class="config-label">Test Configuration</span>
+            <span class="config-label">Other settings</span>
             <div class="config-summary">
               <template v-for="(part, index) in settingsSummaryParts" :key="index">
                 <span>{{ part }}</span>

@@ -27,7 +27,7 @@ const octaves = ref({
   middle: true,
   high: false,
 })
-const walkToRoot = ref(false)
+const walkToRoot = ref(true)
 
 // Load settings from localStorage on mount
 onMounted(() => {

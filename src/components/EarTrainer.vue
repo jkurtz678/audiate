@@ -28,7 +28,7 @@ const showSetup = ref(false)
 const keyMode = ref('fixed') // 'fixed' | 'random'
 const cadenceType = ref('major') // 'major' | 'minor'
 const octaves = ref(['middle']) // ['low', 'middle', 'high']
-const walkToRoot = ref(false)
+const walkToRoot = ref(true)
 const currentKey = ref(null)
 
 // Game state

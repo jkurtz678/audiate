@@ -39,7 +39,7 @@ const numberOfQuestions = ref(10)
 const keyMode = ref('fixed')
 const cadenceType = ref('major')
 const octaves = ref(['middle'])
-const walkToRoot = ref(false)
+const walkToRoot = ref(true)
 const currentKey = ref(null)
 
 // Game state

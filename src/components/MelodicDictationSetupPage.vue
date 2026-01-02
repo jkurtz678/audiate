@@ -19,8 +19,8 @@ const router = useRouter()
 const STORAGE_KEY = 'melodic-dictation-settings'
 
 // Main settings (visible on page)
-const numberOfNotes = ref(8)
-const notesSlider = ref(6) // 0-16: 0-8 maps to 2-10, 9-16 maps to 15-50
+const numberOfNotes = ref(4)
+const notesSlider = ref(2) // 0-16: 0-8 maps to 2-10, 9-16 maps to 15-50
 const isInfinite = ref(false)
 const numberOfQuestions = ref(10)
 const speed = ref(1)
@@ -384,7 +384,7 @@ function handleStart() {
         <!-- Test Configuration Card -->
         <div class="config-card clickable" @click="showSettingsModal = true">
           <div class="config-content">
-            <span class="config-label">Test Configuration</span>
+            <span class="config-label">Other settings</span>
             <div class="config-summary">
               <template v-for="(part, index) in settingsSummaryParts" :key="index">
                 <span>{{ part }}</span>
