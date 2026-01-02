@@ -10,6 +10,10 @@ function goToScaleDegrees() {
 function goToMelodicDictation() {
   router.push('/melodic-dictation/setup')
 }
+
+function goToStats() {
+  router.push('/stats')
+}
 </script>
 
 <template>
@@ -38,6 +42,22 @@ function goToMelodicDictation() {
             <span class="note-icon">♩</span>
             <span class="note-icon">♩</span>
             <span class="note-icon">♩</span>
+          </div>
+        </button>
+
+        <button class="option" @click="goToStats">
+          <div class="option-content">
+            <h2>Statistics</h2>
+            <p>View your progress and accuracy</p>
+          </div>
+          <div class="icon-container">
+            <span class="chart-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+            </span>
           </div>
         </button>
       </div>
@@ -117,6 +137,12 @@ function goToMelodicDictation() {
   font-size: 1.5rem;
   color: #B8956D;
   line-height: 1;
+}
+
+.chart-icon {
+  color: #B8956D;
+  display: flex;
+  align-items: center;
 }
 
 .option h2 {

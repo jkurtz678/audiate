@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ArrowLeft, RotateCcw, Square, Play, Pause, Settings } from 'lucide-vue-next'
 import { usePiano } from '@/composables/usePiano'
+import { useStats } from '@/composables/useStats'
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,8 @@ const {
   getRandomOctave,
   getSolfege,
 } = usePiano()
+
+const { recordStat } = useStats()
 
 const STORAGE_KEY = 'melodic-dictation-settings'
 
@@ -489,6 +492,8 @@ function handleGuess(guessIndex) {
       // First try correct
       guesses.value[currentGuessIndex.value] = { guessedCorrectly: true }
       correctCount.value++
+      const noteOctave = sequence.value[currentGuessIndex.value].octave
+      recordStat('melodicDictation', cadenceType.value, correctNoteIndex, true, noteOctave)
       currentGuessIndex.value++
     }
 
@@ -501,6 +506,8 @@ function handleGuess(guessIndex) {
 
     if (!hadPreviousWrongGuess) {
       incorrectCount.value++
+      const noteOctave = sequence.value[currentGuessIndex.value].octave
+      recordStat('melodicDictation', cadenceType.value, correctNoteIndex, false, noteOctave)
       guesses.value[currentGuessIndex.value] = { guessedCorrectly: false, hasGuessed: true }
     }
 

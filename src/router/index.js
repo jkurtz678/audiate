@@ -7,6 +7,7 @@ import MelodicDictationResults from '../components/MelodicDictationResults.vue'
 import ScaleDegreesSetup from '../components/ScaleDegreesSetup.vue'
 import ScaleDegreesResults from '../components/ScaleDegreesResults.vue'
 import ScaleDegreesExercise from '../components/ScaleDegreesExercise.vue'
+import StatsPage from '../components/StatsPage.vue'
 
 const routes = [
   {
@@ -45,6 +46,12 @@ const routes = [
     path: '/melodic-dictation/results',
     name: 'melodic-dictation-results',
     component: MelodicDictationResults,
+  },
+  // Stats
+  {
+    path: '/stats',
+    name: 'stats',
+    component: StatsPage,
   },
 ]
 

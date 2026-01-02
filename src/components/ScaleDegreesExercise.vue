@@ -3,6 +3,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Settings, ArrowLeft, RotateCcw, Music2 } from 'lucide-vue-next'
 import { usePiano } from '@/composables/usePiano'
+import { useStats } from '@/composables/useStats'
 import {
   Dialog,
   DialogContent,
@@ -28,6 +29,8 @@ const {
   getRandomOctave,
   getSolfege,
 } = usePiano()
+
+const { recordStat } = useStats()
 
 const STORAGE_KEY = 'ear-trainer-settings'
 
@@ -195,6 +198,7 @@ function handleGuess(index) {
     feedbackType.value = 'correct'
     if (!hasGuessedThisRound.value) {
       correctCount.value++
+      recordStat('scaleDegrees', cadenceType.value, currentNoteIndex.value, true, currentOctave.value)
     }
 
     const moveToNext = async () => {
@@ -226,6 +230,7 @@ function handleGuess(index) {
     feedbackType.value = 'wrong'
     if (!hasGuessedThisRound.value) {
       incorrectCount.value++
+      recordStat('scaleDegrees', cadenceType.value, currentNoteIndex.value, false, currentOctave.value)
       hasGuessedThisRound.value = true
     }
     setTimeout(() => {
