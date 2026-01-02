@@ -155,13 +155,15 @@ src/
 ### Colors
 
 **Primary Accent**: `#B8956D` (warm tan/gold)
+**Primary Accent Hover**: `#A6845E` (darker tan - for buttons)
+**Hover Background**: `#F0EBE5` (very light tan - for card/button hover backgrounds)
 **Success/Correct**: `#4A9D68` (green)
 **Error/Incorrect**: `#CC5A5A` (red)
-**Background**: `#E5E4E2` (light warm gray)
-**Card Background**: `white`
-**Text**: `#444` (dark gray)
-**Muted Text**: `#666`, `#888`
-**Borders**: `#E0E0E0`, `#D0D0D0`
+**Background**: `#e8e4e0` (warm beige)
+**Card Background**: `#f5f3f0` (off-white/cream)
+**Text**: `#444`, `#3d3d3d` (dark gray)
+**Muted Text**: `#666`, `#888`, `#999`, `#aaa`
+**Dividers**: `#e0dcd8` (warm light gray)
 
 ### Typography
 
@@ -169,9 +171,9 @@ src/
 **Weights**:
 - Light (300) for body text
 - Normal (400) for buttons
-- Medium (500) for headings
+- Medium (500) for headings and scores
 **Letter Spacing**:
-- `tracking-caps` for uppercase labels
+- `tracking-caps` for uppercase labels (0.1em)
 - `tracking-heading` for headings (0.02em)
 
 ### Components
@@ -183,13 +185,14 @@ background: #B8956D;
 color: white;
 padding: 14px 32px;
 border-radius: 8px;
+border: none;
 hover: #A6845E;
 
-/* Secondary/Outlined Button */
+/* Secondary/Borderless Button */
 background: white;
 color: #444;
-border: 1px solid #E0E0E0;
-hover: background #f5f5f5, border-color #B8956D;
+border: none;
+hover: background #F0EBE5;
 
 /* Stop Button (de-emphasized) */
 background: white;
@@ -198,24 +201,45 @@ border: 1px solid #CC5A5A;
 hover: background rgba(204, 90, 90, 0.1);
 ```
 
-**Solfège Buttons**:
+**Solfège Buttons** (borderless design):
 ```css
 background: white;
-border: 1px solid #D0D0D0;
+border: none;
 border-radius: 8px;
 padding: 18px 24px;
-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-hover: border-color #B8956D, box-shadow 0 2px 8px rgba(0, 0, 0, 0.12);
+/* No box shadow */
+hover: background #F0EBE5;
 
 /* Correct Flash */
 background: rgba(74, 157, 104, 0.15);
-border-color: #4A9D68;
-border-left: 3px solid #4A9D68;
+color: #4A9D68;
 
 /* Wrong Flash */
 background: rgba(204, 90, 90, 0.15);
-border-color: #CC5A5A;
-border-left: 3px solid #CC5A5A;
+color: #CC5A5A;
+```
+
+**Circular Playback Buttons**:
+```css
+/* Main Playback Orb */
+width: 100px;
+height: 100px;
+border-radius: 50%;
+background: #B8956D;
+color: white;
+border: none;
+box-shadow: 0 4px 20px rgba(184, 149, 109, 0.3);
+hover: scale(1.05), background #A6845E;
+
+/* Small Note Button */
+width: 48px;
+height: 48px;
+border-radius: 50%;
+background: white;
+color: #888;
+border: none;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+hover: background #F0EBE5, color #B8956D;
 ```
 
 **Dialogs (shadcn-vue)**:
@@ -228,14 +252,20 @@ border-left: 3px solid #CC5A5A;
 
 **Spacing**:
 - Use rem units (0.5rem, 1rem, 1.5rem, 2rem)
-- Consistent gaps: 12px, 16px, 24px
+- Consistent gaps: 8px, 12px, 16px, 24px, 32px
 
 **Cards**:
 ```css
-background: white;
-border-radius: 12px;
+background: #f5f3f0;
+border-radius: 16px;
 padding: 32px;
-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+```
+
+**Dividers**:
+```css
+background: #e0dcd8;
+height: 1px;
 ```
 
 ## Key Technical Patterns

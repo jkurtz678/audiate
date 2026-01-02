@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Settings, ArrowLeft, RotateCcw, Music2 } from 'lucide-vue-next'
 import { usePiano } from '@/composables/usePiano'
@@ -50,6 +50,8 @@ const correctCount = ref(0)
 const incorrectCount = ref(0)
 const hasGuessedThisRound = ref(false)
 const showSettings = ref(false)
+const showAnswerLabel = ref(false)
+const playbackType = ref(null) // 'cadence' or 'note'
 
 const solfege = computed(() => getSolfege(cadenceType.value))
 
@@ -73,6 +75,18 @@ const settingsSummaryParts = computed(() => {
   }
 
   return parts
+})
+
+// Watch for when initial playback completes
+watch(isPlaying, (newValue, oldValue) => {
+  // When audio stops playing and we haven't shown the label yet this round
+  if (oldValue === true && newValue === false && !showAnswerLabel.value) {
+    showAnswerLabel.value = true
+  }
+  // Clear playback type when audio stops
+  if (newValue === false) {
+    playbackType.value = null
+  }
 })
 
 // Load settings and start
@@ -112,6 +126,8 @@ function startNewRound() {
   feedbackType.value = null
   walkHighlightIndex.value = null
   hasGuessedThisRound.value = false
+  showAnswerLabel.value = false
+  playbackType.value = 'cadence'
 
   // Get new key if random mode
   if (keyMode.value === 'random') {
@@ -125,12 +141,14 @@ function startNewRound() {
 
 function handleReplay() {
   if (currentNoteIndex.value !== null && !isPlaying.value) {
+    playbackType.value = 'cadence'
     playCadenceAndNote(currentNoteIndex.value, currentKey.value, cadenceType.value, currentOctave.value)
   }
 }
 
 function handlePlayNote() {
   if (currentNoteIndex.value !== null && !isPlaying.value) {
+    playbackType.value = 'note'
     playNoteOnly(currentNoteIndex.value, currentKey.value, cadenceType.value, currentOctave.value)
   }
 }
@@ -276,73 +294,79 @@ function handleSettingsDone() {
           <ArrowLeft :size="20" />
           <span>Back</span>
         </button>
-        <p class="title-small">Functional Scale Degrees</p>
         <button class="settings-btn" @click="showSettings = true">
           <Settings :size="20" />
         </button>
       </div>
 
-      <!-- Settings Summary + Score combined -->
-      <div class="info-bar">
-        <div class="settings-summary">
+      <!-- Center Content -->
+      <div class="center-content">
+        <!-- Test Badge (Settings Summary) -->
+        <div class="test-badge">
           <template v-for="(part, index) in settingsSummaryParts" :key="index">
             <span>{{ part }}</span>
-            <span v-if="index < settingsSummaryParts.length - 1" class="summary-separator">·</span>
+            <span v-if="index < settingsSummaryParts.length - 1" class="summary-separator"> · </span>
           </template>
         </div>
-        <div class="score-compact">
-          <span class="score-label">Score:</span>
-          <span class="score-correct">{{ correctCount }}</span>
-          <span class="score-sep">/</span>
-          <span class="score-incorrect">{{ incorrectCount }}</span>
-        </div>
-      </div>
 
-      <!-- LAYOUT 3: Compact card with everything on one row -->
-      <div class="status-section">
-        <div class="question-card" :class="{ 'is-playing': isPlaying }">
-          <div class="question-row">
-            <div class="question-info">
-              <span class="question-label">Question</span>
-              <span class="question-number">{{ currentQuestionNumber }} <span class="of-total">of {{ numberOfQuestions }}</span></span>
-            </div>
-
-            <div class="controls-and-status">
-              <div class="audio-status">
-                <template v-if="isPlaying">
-                  <div class="wave-bars-small">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                  </div>
-                  <span class="status-text">Listening...</span>
-                </template>
-              </div>
-
-              <button
-                class="icon-btn replay-icon-btn"
-                :disabled="isPlaying"
-                @click="handleReplay"
-                title="Replay cadence and note"
-              >
-                <RotateCcw :size="18" />
-              </button>
-              <button
-                class="icon-btn note-icon-btn"
-                :disabled="isPlaying"
-                @click="handlePlayNote"
-                title="Play note only"
-              >
-                <Music2 :size="18" />
-              </button>
-            </div>
+        <!-- Progress Display -->
+        <div class="progress-display">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" :style="{ width: (currentQuestionNumber / numberOfQuestions * 100) + '%' }"></div>
+          </div>
+          <div class="progress-meta">
+            <span class="progress-text">Question {{ currentQuestionNumber }} of {{ numberOfQuestions }}</span>
+            <span class="score-text">
+              <span class="score-correct">{{ correctCount }}</span> / <span class="score-incorrect">{{ incorrectCount }}</span>
+            </span>
           </div>
         </div>
-      </div>
 
-      <!-- Loading -->
-      <div v-if="!isLoaded" class="loading">
-        Loading piano...
+        <!-- Playback Controls -->
+        <div class="playback-controls">
+          <div style="flex: 1"></div>
+          <button
+            class="playback-orb"
+            :class="{ listening: isPlaying && playbackType === 'cadence' }"
+            :disabled="isPlaying"
+            @click="handleReplay"
+            title="Replay cadence and note"
+          >
+            <div v-if="isPlaying && playbackType === 'cadence'" class="wave-bars">
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+            </div>
+            <RotateCcw v-else :size="32" />
+          </button>
+          <div style="flex: 1">
+            <button
+              class="note-btn"
+              :class="{ listening: isPlaying && playbackType === 'note' }"
+              :disabled="isPlaying"
+              @click="handlePlayNote"
+              title="Play note only"
+            >
+              <div v-if="isPlaying && playbackType === 'note'" class="wave-bars-small">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </div>
+              <Music2 v-else :size="20" />
+            </button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Loading -->
+        <div v-if="!isLoaded" class="loading">
+          Loading piano...
+        </div>
+
+        <div v-else class="answer-label" :class="{ 'label-hidden': !showAnswerLabel }">
+          Select the note you heard
+        </div>
       </div>
 
       <!-- Solfege Buttons -->
@@ -368,11 +392,12 @@ function handleSettingsDone() {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: #E5E4E2;
+  background: #e8e4e0;
 }
 
 .card {
-  background: #FAF9F7;
+  background: #f5f3f0;
+  border-radius: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   padding: 32px;
   width: 100%;
@@ -386,15 +411,6 @@ function handleSettingsDone() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.title-small {
-  font-size: 0.85rem;
-  color: #888;
-  font-weight: 300;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0;
 }
 
 .back-btn {
@@ -422,7 +438,7 @@ function handleSettingsDone() {
   padding: 8px;
   cursor: pointer;
   color: #888;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: all 0.2s;
   display: flex;
   align-items: center;
@@ -435,21 +451,22 @@ function handleSettingsDone() {
   background: rgba(0, 0, 0, 0.04);
 }
 
-/* Info bar - Settings Summary + Score on same line */
-.info-bar {
+/* Center Content */
+.center-content {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px 0;
 }
 
-.settings-summary {
+.test-badge {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: #888;
-  font-size: 0.9rem;
-  font-weight: 300;
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 8px;
 }
 
 .summary-separator {
@@ -458,223 +475,125 @@ function handleSettingsDone() {
   font-weight: 500;
 }
 
-.score-compact {
+/* Progress Display */
+.progress-display {
+  margin-bottom: 32px;
+  width: 240px;
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 4px;
+  background: #e0dcd8;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #B8956D;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.progress-meta {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 6px;
-  font-size: 1.1rem;
+  margin-top: 8px;
 }
 
-.score-label {
-  color: #888;
-  font-weight: 300;
-  font-size: 0.9rem;
+.progress-text {
+  font-size: 0.75rem;
+  color: #999;
 }
 
-.score-correct {
-  color: #4A9D68;
+.score-text {
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
-.score-sep {
-  color: #ccc;
+.score-correct {
+  color: #4a9d5b;
 }
 
 .score-incorrect {
   color: #CC5A5A;
-  font-weight: 500;
 }
 
-/* LAYOUT 3: Compact card with fixed-height audio area */
-.status-section {
+/* Playback Controls */
+.playback-controls {
   display: flex;
-  justify-content: center;
-}
-
-.question-card {
-  background: white;
-  border: 2px solid #E0E0E0;
-  border-radius: 12px;
-  padding: 20px 24px;
+  align-items: center;
+  gap: 16px;
   width: 100%;
-  max-width: 400px;
-  transition: all 0.3s ease;
+  margin-bottom: 60px;
 }
 
-.question-card.is-playing {
-  border-color: #B8956D;
-  box-shadow: 0 0 0 3px rgba(184, 149, 109, 0.1);
-}
-
-.question-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.question-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.question-label {
-  font-size: 0.7rem;
-  color: #888;
-  font-weight: 300;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.question-number {
-  font-size: 2rem;
-  font-weight: 500;
-  color: #444;
-  line-height: 1;
-}
-
-.of-total {
-  font-size: 1.2rem;
-  font-weight: 300;
-  color: #888;
-}
-
-.controls-and-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.audio-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 120px;
-}
-
-.status-text {
-  font-size: 0.85rem;
-  color: #B8956D;
-  font-weight: 400;
-}
-
-.icon-btn {
+.playback-orb {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #B8956D;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(184, 149, 109, 0.3);
   border: none;
-}
-
-.replay-icon-btn {
-  background: #B8956D;
   color: white;
 }
 
-.replay-icon-btn:hover:not(:disabled) {
+.playback-orb:hover:not(:disabled) {
+  transform: scale(1.05);
   background: #A6845E;
-  transform: scale(1.05);
 }
 
-.replay-icon-btn:disabled {
-  background: #E0E0E0;
-  color: #888;
+.playback-orb:disabled {
   cursor: not-allowed;
+  opacity: 0.9;
 }
 
-.note-icon-btn {
-  background: white;
-  color: #444;
-  border: 1px solid #E0E0E0;
+.playback-orb.listening {
+  animation: orbPulse 1.5s ease-in-out infinite;
 }
 
-.note-icon-btn:hover:not(:disabled) {
-  background: #f5f5f5;
-  border-color: #B8956D;
-  color: #B8956D;
-  transform: scale(1.05);
+@keyframes orbPulse {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(184, 149, 109, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 40px rgba(184, 149, 109, 0.5);
+  }
 }
 
-.note-icon-btn:disabled {
-  background: #E0E0E0;
-  color: #888;
-  cursor: not-allowed;
-  border-color: #E0E0E0;
-}
-
-.loading {
-  color: #888;
-  text-align: center;
-  font-weight: 300;
-}
-
-.solfege-buttons {
+/* Wave bars animation inside orb */
+.wave-bars {
   display: flex;
-  gap: 8px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.solfege-btn {
-  padding: 16px 12px;
-  font-size: 1.1rem;
-  font-weight: 400;
-  border: 1px solid #E0E0E0;
-  border-radius: 8px;
-  background: white;
-  color: #444;
-  cursor: pointer;
-  transition: all 0.2s;
-  min-width: 60px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.solfege-btn:hover {
-  border-color: #B8956D;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-}
-
-.solfege-btn.correct,
-.solfege-btn.correct:hover {
-  background: rgba(74, 157, 104, 0.15);
-  border-color: #4A9D68;
-  color: #4A9D68;
-  border-left: 3px solid #4A9D68;
-}
-
-.solfege-btn.wrong,
-.solfege-btn.wrong:hover {
-  background: rgba(204, 90, 90, 0.15);
-  border-color: #CC5A5A;
-  color: #CC5A5A;
-  border-left: 3px solid #CC5A5A;
-}
-
-.solfege-btn.walk-highlight,
-.solfege-btn.walk-highlight:hover {
-  background: rgba(74, 157, 104, 0.15);
-  border-color: #4A9D68;
-  color: #4A9D68;
-}
-
-/* Audio Indicator - Small Wave Bars */
-.wave-bars-small {
-  display: flex;
-  gap: 2px;
+  gap: 4px;
   align-items: flex-end;
-  height: 16px;
+  height: 32px;
   animation: fade-in 0.3s ease-in;
 }
 
-.wave-bars-small .bar {
-  width: 2px;
-  background: #B8956D;
-  border-radius: 1px;
-  animation: wave-bounce-small 0.8s ease-in-out infinite;
+.wave-bars .bar {
+  width: 3px;
+  background: white;
+  border-radius: 1.5px;
+  animation: wave-bounce 0.8s ease-in-out infinite;
+}
+
+.wave-bars .bar:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.wave-bars .bar:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.wave-bars .bar:nth-child(3) {
+  animation-delay: 0.3s;
 }
 
 @keyframes fade-in {
@@ -684,6 +603,56 @@ function handleSettingsDone() {
   to {
     opacity: 1;
   }
+}
+
+@keyframes wave-bounce {
+  0%, 100% {
+    height: 8px;
+  }
+  50% {
+    height: 32px;
+  }
+}
+
+.note-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  color: #888;
+}
+
+.note-btn:hover:not(:disabled) {
+  background: #F0EBE5;
+  color: #B8956D;
+}
+
+.note-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Wave bars animation inside note button (smaller) */
+.wave-bars-small {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 20px;
+  animation: fade-in 0.3s ease-in;
+}
+
+.wave-bars-small .bar {
+  width: 2px;
+  background: #B8956D;
+  border-radius: 1px;
+  animation: wave-bounce-small 0.8s ease-in-out infinite;
 }
 
 .wave-bars-small .bar:nth-child(1) {
@@ -700,10 +669,89 @@ function handleSettingsDone() {
 
 @keyframes wave-bounce-small {
   0%, 100% {
-    height: 4px;
+    height: 6px;
   }
   50% {
-    height: 16px;
+    height: 20px;
   }
+}
+
+/* Divider */
+.divider {
+  width: 100%;
+  max-width: 400px;
+  height: 1px;
+  background: #e0dcd8;
+  margin-bottom: 24px;
+}
+
+/* Answer Label */
+.answer-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #888;
+  transition: opacity 0.5s ease;
+  opacity: 1;
+  min-height: 1em;
+}
+
+.answer-label.label-hidden {
+  opacity: 0;
+}
+
+.loading {
+  color: #aaa;
+  text-align: center;
+  font-weight: 300;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  min-height: 1em;
+  transition: opacity 0.5s ease;
+  opacity: 1;
+}
+
+.solfege-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.solfege-btn {
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: white;
+  color: #3d3d3d;
+}
+
+.solfege-btn:hover {
+  background: #F0EBE5;
+}
+
+.solfege-btn.correct,
+.solfege-btn.correct:hover {
+  background: rgba(74, 157, 104, 0.15);
+  color: #4A9D68;
+}
+
+.solfege-btn.wrong,
+.solfege-btn.wrong:hover {
+  background: rgba(204, 90, 90, 0.15);
+  color: #CC5A5A;
+}
+
+.solfege-btn.walk-highlight,
+.solfege-btn.walk-highlight:hover {
+  background: rgba(74, 157, 104, 0.15);
+  color: #4A9D68;
 }
 </style>

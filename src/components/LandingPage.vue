@@ -40,12 +40,13 @@ function goToMelodicDictation() {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: #E5E4E2;
+  background: #e8e4e0;
 }
 
 .card {
-  background: #FAF9F7;
+  background: #f5f3f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
   padding: 48px;
   width: 100%;
   max-width: 500px;
@@ -54,6 +55,7 @@ function goToMelodicDictation() {
 
 .title {
   font-size: 2rem;
+  font-weight: 500;
   margin: 0 0 8px 0;
 }
 
@@ -72,24 +74,24 @@ function goToMelodicDictation() {
 
 .option {
   background: white;
-  border: 1px solid #E0E0E0;
+  border: none;
   border-radius: 8px;
   padding: 24px;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   text-align: left;
 }
 
 .option:hover {
-  border-color: #B8956D;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  background: #F0EBE5;
   transform: translateY(-2px);
 }
 
 .option h2 {
   margin: 0 0 8px 0;
   font-size: 1.1rem;
+  font-weight: 500;
+  color: #3d3d3d;
 }
 
 .option p {

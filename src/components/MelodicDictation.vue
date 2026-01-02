@@ -586,12 +586,13 @@ function getNoteStatus(index) {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: #E5E4E2;
+  background: #e8e4e0;
 }
 
 .card {
-  background: #FAF9F7;
+  background: #f5f3f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
   padding: 32px;
   width: 100%;
   max-width: 700px;
@@ -777,33 +778,29 @@ function getNoteStatus(index) {
   padding: 16px 12px;
   font-size: 1.1rem;
   font-weight: 400;
-  border: 1px solid #E0E0E0;
+  border: none;
   border-radius: 8px;
   background: white;
-  color: #444;
+  color: #3d3d3d;
   cursor: pointer;
   transition: all 0.2s;
   min-width: 60px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .solfege-btn:hover {
-  border-color: #B8956D;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  background: #F0EBE5;
 }
 
-.solfege-btn.correct {
+.solfege-btn.correct,
+.solfege-btn.correct:hover {
   background: rgba(74, 157, 104, 0.15);
-  border-color: #4A9D68;
   color: #4A9D68;
-  border-left: 3px solid #4A9D68;
 }
 
-.solfege-btn.wrong {
+.solfege-btn.wrong,
+.solfege-btn.wrong:hover {
   background: rgba(204, 90, 90, 0.15);
-  border-color: #CC5A5A;
   color: #CC5A5A;
-  border-left: 3px solid #CC5A5A;
 }
 
 .controls {
@@ -847,16 +844,15 @@ function getNoteStatus(index) {
 .replay-btn {
   background: white;
   color: #444;
-  border: 1px solid #E0E0E0;
+  border: none;
 }
 
 .replay-btn:hover:not(:disabled) {
   background: #f5f5f5;
-  border-color: #B8956D;
 }
 
 .replay-btn:disabled {
-  background: #E0E0E0;
+  background: #e0dcd8;
   color: #888;
   cursor: not-allowed;
 }

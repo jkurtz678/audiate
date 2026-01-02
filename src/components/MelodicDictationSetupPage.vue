@@ -410,12 +410,13 @@ function handleStart() {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: #E5E4E2;
+  background: #e8e4e0;
 }
 
 .card {
-  background: #FAF9F7;
+  background: #f5f3f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
   padding: 32px;
   width: 100%;
   max-width: 600px;
@@ -479,14 +480,13 @@ function handleStart() {
 
 .config-card {
   background: white;
-  border: 1px solid #E0E0E0;
+  border: none;
   border-radius: 8px;
   padding: 16px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   transition: all 0.2s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .config-card.clickable {
@@ -494,8 +494,7 @@ function handleStart() {
 }
 
 .config-card.clickable:hover {
-  border-color: #B8956D;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  background: #F0EBE5;
 }
 
 .disabled-content {
@@ -582,7 +581,7 @@ function handleStart() {
   flex: 1;
   height: 6px;
   border-radius: 3px;
-  background: #E0E0E0;
+  background: #e0dcd8;
   outline: none;
   -webkit-appearance: none;
   appearance: none;
@@ -630,10 +629,6 @@ function handleStart() {
 .config-icon {
   color: #888;
   transition: color 0.2s;
-}
-
-.config-card.clickable:hover .config-icon {
-  color: #B8956D;
 }
 
 .start-section {
