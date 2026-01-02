@@ -57,6 +57,7 @@ const hasPlayedFirstNote = ref(false) // Track if first note has been played in 
 const guesses = ref([]) // Array of { guessedCorrectly: boolean } or undefined
 const correctCount = ref(0)
 const incorrectCount = ref(0)
+const notePlayedTimes = ref([]) // Array of timestamps when each note was played (for thinking time tracking)
 
 // Button feedback state
 const feedbackButtonIndex = ref(null)
@@ -257,6 +258,7 @@ async function startNewSequence() {
   guesses.value = []
   isPaused.value = false
   hasPlayedFirstNote.value = false
+  notePlayedTimes.value = [] // Reset thinking time tracking
 
   // Set key and octave (random new key if random mode)
   if (keyMode.value === 'random') {

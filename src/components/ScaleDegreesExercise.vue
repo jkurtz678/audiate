@@ -55,6 +55,7 @@ const hasGuessedThisRound = ref(false)
 const showSettings = ref(false)
 const showAnswerLabel = ref(false)
 const playbackType = ref(null) // 'cadence' or 'note'
+const notePlayedAt = ref(null) // Timestamp when note finished playing (for thinking time tracking)
 
 const solfege = computed(() => getSolfege(cadenceType.value))
 
@@ -86,9 +87,13 @@ watch(isPlaying, (newValue, oldValue) => {
   if (oldValue === true && newValue === false && !showAnswerLabel.value) {
     showAnswerLabel.value = true
   }
-  // Clear playback type when audio stops
+  // Clear playback type when audio stops and record timestamp for thinking time
   if (newValue === false) {
     playbackType.value = null
+    // Record when the note finished playing (for thinking time calculation)
+    if (!hasGuessedThisRound.value) {
+      notePlayedAt.value = Date.now()
+    }
   }
 })
 
@@ -131,6 +136,7 @@ function startNewRound() {
   hasGuessedThisRound.value = false
   showAnswerLabel.value = false
   playbackType.value = 'cadence'
+  notePlayedAt.value = null
 
   // Get new key if random mode
   if (keyMode.value === 'random') {
@@ -198,7 +204,9 @@ function handleGuess(index) {
     feedbackType.value = 'correct'
     if (!hasGuessedThisRound.value) {
       correctCount.value++
-      recordStat('scaleDegrees', cadenceType.value, currentNoteIndex.value, true, currentOctave.value)
+      // Calculate thinking time (time from note played to guess made)
+      const thinkingTime = notePlayedAt.value ? Date.now() - notePlayedAt.value : null
+      recordStat('scaleDegrees', cadenceType.value, currentNoteIndex.value, true, currentOctave.value, thinkingTime)
     }
 
     const moveToNext = async () => {
@@ -230,7 +238,9 @@ function handleGuess(index) {
     feedbackType.value = 'wrong'
     if (!hasGuessedThisRound.value) {
       incorrectCount.value++
-      recordStat('scaleDegrees', cadenceType.value, currentNoteIndex.value, false, currentOctave.value)
+      // Calculate thinking time (time from note played to guess made)
+      const thinkingTime = notePlayedAt.value ? Date.now() - notePlayedAt.value : null
+      recordStat('scaleDegrees', cadenceType.value, currentNoteIndex.value, false, currentOctave.value, thinkingTime)
       hasGuessedThisRound.value = true
     }
     setTimeout(() => {
