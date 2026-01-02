@@ -270,6 +270,7 @@ function handleSettingsDone() {
 </script>
 
 <template>
+  <div>
   <!-- Settings Modal -->
   <Dialog :open="showSettings" @update:open="(val) => !val && handleSettingsDone()">
     <DialogContent class="sm:max-w-md bg-card" @pointerDownOutside.prevent>
@@ -380,6 +381,7 @@ function handleSettingsDone() {
         </button>
       </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -714,7 +716,7 @@ function handleSettingsDone() {
   display: flex;
   gap: 8px;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .solfege-btn {
@@ -729,6 +731,40 @@ function handleSettingsDone() {
   transition: all 0.15s ease;
   background: white;
   color: #3d3d3d;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 500px) {
+  .page {
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .card {
+    border-radius: 0;
+    padding: 24px 16px;
+    min-height: 100vh;
+    box-shadow: none;
+  }
+
+  .playback-orb {
+    width: 80px;
+    height: 80px;
+  }
+
+  .solfege-buttons {
+    gap: 4px;
+  }
+
+  .solfege-btn {
+    width: auto;
+    height: 48px;
+    padding: 0 8px;
+    font-size: 0.85rem;
+    min-width: 36px;
+    flex: 1;
+    border-radius: 6px;
+  }
 }
 
 .solfege-btn:hover {

@@ -19,8 +19,8 @@ function goToStats() {
 <template>
   <div class="page">
     <div class="card">
-      <h1 class="title">Eario (?)</h1>
-      <p class="subtitle">Choose a training mode to get started</p>
+      <h1 class="title">Audiate</h1>
+      <p class="subtitle">Hear the music in your mind</p>
 
       <div class="options">
         <button class="option" @click="goToScaleDegrees">
@@ -39,9 +39,7 @@ function goToStats() {
             <p>Transcribe melodies by ear</p>
           </div>
           <div class="icon-container">
-            <span class="note-icon">♩</span>
-            <span class="note-icon">♩</span>
-            <span class="note-icon">♩</span>
+            <span class="note-icon">♫</span>
           </div>
         </button>
 
@@ -76,51 +74,56 @@ function goToStats() {
 }
 
 .card {
-  background: #f5f3f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(180deg, #f5f3f0 0%, #ebe7e3 100%);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   border-radius: 16px;
-  padding: 48px;
+  padding: 56px 32px;
   width: 100%;
   max-width: 500px;
   text-align: center;
 }
 
 .title {
-  font-size: 2rem;
-  font-weight: 500;
-  margin: 0 0 8px 0;
+  font-size: 2.75rem;
+  font-weight: 300;
+  color: #3d3d3d;
+  margin: 0 0 4px 0;
 }
 
 .subtitle {
-  color: #888;
-  font-size: 1rem;
-  font-weight: 300;
-  margin: 0 0 32px 0;
+  color: #B8956D;
+  font-size: 0.9rem;
+  font-weight: 400;
+  margin: 0 0 44px 0;
 }
 
 .options {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  max-width: 360px;
+  margin: 0 auto;
 }
 
 .option {
   background: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 16px;
   padding: 24px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   text-align: left;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .option:hover {
   background: #F0EBE5;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .option-content {
@@ -128,13 +131,18 @@ function goToStats() {
 }
 
 .icon-container {
+  width: 48px;
+  height: 48px;
+  background: #f5f3f0;
+  border-radius: 12px;
   display: flex;
-  gap: 4px;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
 .note-icon {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: #B8956D;
   line-height: 1;
 }
@@ -146,17 +154,44 @@ function goToStats() {
 }
 
 .option h2 {
-  margin: 0 0 8px 0;
-  font-size: 1.1rem;
-  font-weight: 500;
+  margin: 0 0 4px 0;
+  font-size: 1.05rem;
+  font-weight: 600;
   color: #3d3d3d;
 }
 
 .option p {
   color: #888;
   margin: 0;
-  font-size: 0.9rem;
-  font-weight: 300;
+  font-size: 0.8rem;
+  font-weight: 400;
   line-height: 1.5;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 500px) {
+  .page {
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .card {
+    border-radius: 0;
+    padding: 48px 20px;
+    min-height: 100vh;
+    box-shadow: none;
+  }
+
+  .title {
+    font-size: 2.25rem;
+  }
+
+  .options {
+    max-width: 100%;
+  }
+
+  .option {
+    padding: 20px 16px;
+  }
 }
 </style>

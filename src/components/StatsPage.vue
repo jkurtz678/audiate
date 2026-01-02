@@ -53,100 +53,128 @@ function getCorrectWidth(note) {
           <ArrowLeft :size="20" />
           <span>Back</span>
         </button>
+        <!-- Title (desktop) -->
+        <div class="title-section title-desktop">
+          <h1 class="title">Statistics</h1>
+        </div>
+        <div class="header-spacer"></div>
       </div>
 
-      <!-- Title -->
-      <div class="title-section">
+      <!-- Title (mobile) -->
+      <div class="title-section title-mobile">
         <h1 class="title">Statistics</h1>
         <p class="subtitle">Track your progress over time</p>
       </div>
 
-      <!-- Filters -->
-      <div class="filters">
-        <div class="filter-group">
-          <Label class="filter-label">Exercise</Label>
-          <RadioGroup v-model="exerciseFilter" class="filter-options">
-            <div class="filter-option">
-              <RadioGroupItem id="all" value="all" />
-              <Label for="all" class="font-light cursor-pointer">All</Label>
+      <!-- Main content area -->
+      <div class="main-content">
+        <!-- Left column: Filters + Summary -->
+        <div class="left-column">
+          <!-- Filters -->
+          <div class="filters">
+            <div class="filter-group">
+              <Label class="filter-label">Exercise</Label>
+              <RadioGroup v-model="exerciseFilter" class="filter-options">
+                <div class="filter-option">
+                  <RadioGroupItem id="all" value="all" />
+                  <Label for="all" class="font-light cursor-pointer">All</Label>
+                </div>
+                <div class="filter-option">
+                  <RadioGroupItem id="scaleDegrees" value="scaleDegrees" />
+                  <Label for="scaleDegrees" class="font-light cursor-pointer">Scale Degrees</Label>
+                </div>
+                <div class="filter-option">
+                  <RadioGroupItem id="melodicDictation" value="melodicDictation" />
+                  <Label for="melodicDictation" class="font-light cursor-pointer">Melodic Dictation</Label>
+                </div>
+              </RadioGroup>
             </div>
-            <div class="filter-option">
-              <RadioGroupItem id="scaleDegrees" value="scaleDegrees" />
-              <Label for="scaleDegrees" class="font-light cursor-pointer">Scale Degrees</Label>
-            </div>
-            <div class="filter-option">
-              <RadioGroupItem id="melodicDictation" value="melodicDictation" />
-              <Label for="melodicDictation" class="font-light cursor-pointer">Melodic Dictation</Label>
-            </div>
-          </RadioGroup>
-        </div>
 
-        <div class="filter-group">
-          <Label class="filter-label">Mode</Label>
-          <RadioGroup v-model="modeFilter" class="filter-options">
-            <div class="filter-option">
-              <RadioGroupItem id="major" value="major" />
-              <Label for="major" class="font-light cursor-pointer">Major</Label>
-            </div>
-            <div class="filter-option">
-              <RadioGroupItem id="minor" value="minor" />
-              <Label for="minor" class="font-light cursor-pointer">Minor</Label>
-            </div>
-          </RadioGroup>
-        </div>
-      </div>
-
-      <!-- Stats Summary -->
-      <div v-if="hasData" class="summary">
-        <div class="summary-stat">
-          <span class="summary-value correct">{{ totalStats.correct }}</span>
-          <span class="summary-label">Correct</span>
-        </div>
-        <div class="summary-divider"></div>
-        <div class="summary-stat">
-          <span class="summary-value incorrect">{{ totalStats.incorrect }}</span>
-          <span class="summary-label">Incorrect</span>
-        </div>
-        <div class="summary-divider"></div>
-        <div class="summary-stat">
-          <span class="summary-value">{{ totalStats.accuracy }}%</span>
-          <span class="summary-label">Accuracy</span>
-        </div>
-      </div>
-
-      <!-- Bar Chart -->
-      <div class="chart">
-        <template v-if="hasData">
-          <div v-for="note in noteStats" :key="note.noteIndex" class="chart-row">
-            <div class="chart-label">{{ note.label }}</div>
-            <div class="chart-bar-container">
-              <div
-                class="chart-bar"
-                :style="{ width: getBarWidth(note) + '%' }"
-              >
-                <div
-                  class="chart-bar-correct"
-                  :style="{ width: getCorrectWidth(note) + '%' }"
-                ></div>
-              </div>
-            </div>
-            <div class="chart-value">
-              <span v-if="note.total > 0">
-                {{ note.correct }}/{{ note.total }}
-              </span>
-              <span v-else class="no-data">-</span>
+            <div class="filter-group">
+              <Label class="filter-label">Mode</Label>
+              <RadioGroup v-model="modeFilter" class="filter-options">
+                <div class="filter-option">
+                  <RadioGroupItem id="major" value="major" />
+                  <Label for="major" class="font-light cursor-pointer">Major</Label>
+                </div>
+                <div class="filter-option">
+                  <RadioGroupItem id="minor" value="minor" />
+                  <Label for="minor" class="font-light cursor-pointer">Minor</Label>
+                </div>
+              </RadioGroup>
             </div>
           </div>
-        </template>
 
-        <div v-else class="empty-state">
-          <p class="empty-text">No data yet</p>
-          <p class="empty-subtext">Complete some exercises to see your stats here</p>
+          <!-- Stats Summary -->
+          <div v-if="hasData" class="summary">
+            <div class="summary-stat">
+              <span class="summary-value correct">{{ totalStats.correct }}</span>
+              <span class="summary-label">Correct</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-stat">
+              <span class="summary-value incorrect">{{ totalStats.incorrect }}</span>
+              <span class="summary-label">Incorrect</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-stat">
+              <span class="summary-value">{{ totalStats.accuracy }}%</span>
+              <span class="summary-label">Accuracy</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right column: Chart -->
+        <div class="right-column">
+          <!-- Bar Chart -->
+          <div class="chart">
+            <template v-if="hasData">
+              <div v-for="note in noteStats" :key="note.noteIndex" class="chart-row">
+                <div class="chart-label">{{ note.label }}</div>
+                <div class="chart-bar-container">
+                  <div
+                    class="chart-bar"
+                    :style="{ width: getBarWidth(note) + '%' }"
+                  >
+                    <div
+                      class="chart-bar-correct"
+                      :style="{ width: getCorrectWidth(note) + '%' }"
+                    ></div>
+                  </div>
+                </div>
+                <div class="chart-value">
+                  <span v-if="note.total > 0">
+                    {{ note.correct }}/{{ note.total }}
+                    <span class="chart-percent">({{ Math.round((note.correct / note.total) * 100) }}%)</span>
+                  </span>
+                  <span v-else class="no-data">-</span>
+                </div>
+              </div>
+            </template>
+
+            <div v-else class="empty-state">
+              <p class="empty-text">No data yet</p>
+              <p class="empty-subtext">Complete some exercises to see your stats here</p>
+            </div>
+          </div>
+
+          <!-- Legend (desktop) -->
+          <div v-if="hasData" class="legend legend-desktop">
+            <div class="legend-item">
+              <div class="legend-color correct"></div>
+              <span>Correct</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color incorrect"></div>
+              <span>Incorrect</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Legend -->
-      <div v-if="hasData" class="legend">
+      <!-- Legend (mobile) -->
+      <div v-if="hasData" class="legend legend-mobile">
         <div class="legend-item">
           <div class="legend-color correct"></div>
           <span>Correct</span>
@@ -176,7 +204,7 @@ function getCorrectWidth(note) {
   border-radius: 16px;
   padding: 32px;
   width: 100%;
-  max-width: 600px;
+  max-width: 900px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -186,6 +214,10 @@ function getCorrectWidth(note) {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.header-spacer {
+  width: 80px; /* Balance the back button */
 }
 
 .back-btn {
@@ -211,9 +243,17 @@ function getCorrectWidth(note) {
   text-align: center;
 }
 
+.title-desktop {
+  display: block;
+}
+
+.title-mobile {
+  display: none;
+}
+
 .title {
   font-size: 1.75rem;
-  margin: 0 0 8px 0;
+  margin: 0;
   font-weight: 500;
 }
 
@@ -221,13 +261,36 @@ function getCorrectWidth(note) {
   color: #888;
   font-size: 0.95rem;
   font-weight: 300;
-  margin: 0;
+  margin: 8px 0 0 0;
+}
+
+/* Two-column layout for desktop */
+.main-content {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.right-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .filters {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  flex-direction: row;
+  gap: 24px;
   background: white;
   border-radius: 8px;
   padding: 16px 20px;
@@ -249,8 +312,8 @@ function getCorrectWidth(note) {
 
 .filter-options {
   display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .filter-option {
@@ -263,7 +326,7 @@ function getCorrectWidth(note) {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
   padding: 16px;
   background: white;
   border-radius: 8px;
@@ -277,7 +340,7 @@ function getCorrectWidth(note) {
 }
 
 .summary-value {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 500;
   color: #444;
 }
@@ -291,7 +354,7 @@ function getCorrectWidth(note) {
 }
 
 .summary-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #888;
   font-weight: 400;
   text-transform: uppercase;
@@ -300,17 +363,18 @@ function getCorrectWidth(note) {
 
 .summary-divider {
   width: 1px;
-  height: 40px;
+  height: 36px;
   background: #e0dcd8;
 }
 
 .chart {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   background: white;
   border-radius: 8px;
-  padding: 20px;
+  padding: 16px 20px;
+  width: 100%;
 }
 
 .chart-row {
@@ -320,8 +384,8 @@ function getCorrectWidth(note) {
 }
 
 .chart-label {
-  width: 40px;
-  font-size: 0.9rem;
+  width: 36px;
+  font-size: 0.85rem;
   font-weight: 400;
   color: #444;
   text-align: right;
@@ -329,7 +393,8 @@ function getCorrectWidth(note) {
 
 .chart-bar-container {
   flex: 1;
-  height: 24px;
+  min-width: 80px;
+  height: 22px;
   background: #f0ebe5;
   border-radius: 4px;
   overflow: hidden;
@@ -350,11 +415,17 @@ function getCorrectWidth(note) {
 }
 
 .chart-value {
-  width: 50px;
-  font-size: 0.85rem;
+  width: 90px;
+  font-size: 0.8rem;
   font-weight: 300;
   color: #666;
   text-align: left;
+  white-space: nowrap;
+}
+
+.chart-percent {
+  color: #999;
+  margin-left: 2px;
 }
 
 .chart-value .no-data {
@@ -386,6 +457,14 @@ function getCorrectWidth(note) {
   gap: 24px;
 }
 
+.legend-desktop {
+  display: flex;
+}
+
+.legend-mobile {
+  display: none;
+}
+
 .legend-item {
   display: flex;
   align-items: center;
@@ -407,5 +486,71 @@ function getCorrectWidth(note) {
 
 .legend-color.incorrect {
   background: #CC5A5A;
+}
+
+/* Tablet/smaller desktop - stack but keep wider card */
+@media (max-width: 768px) {
+  .card {
+    max-width: 600px;
+  }
+
+  .main-content {
+    flex-direction: column;
+  }
+
+  .left-column {
+    width: 100%;
+  }
+
+  .right-column {
+    width: 100%;
+  }
+
+  .title-desktop {
+    display: none;
+  }
+
+  .title-mobile {
+    display: block;
+  }
+
+  .header-spacer {
+    display: none;
+  }
+
+  .legend-desktop {
+    display: none;
+  }
+
+  .legend-mobile {
+    display: flex;
+  }
+}
+
+/* Mobile responsive styles */
+@media (max-width: 500px) {
+  .page {
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .card {
+    border-radius: 0;
+    padding: 24px 16px;
+    min-height: 100vh;
+    box-shadow: none;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .filters {
+    padding: 14px 16px;
+  }
+
+  .chart {
+    padding: 16px;
+  }
 }
 </style>

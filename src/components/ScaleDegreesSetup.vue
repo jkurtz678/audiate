@@ -123,6 +123,7 @@ function handleStart() {
 </script>
 
 <template>
+  <div>
   <!-- Settings Modal -->
   <Dialog :open="showSettingsModal" @update:open="(val) => showSettingsModal = val">
     <DialogContent class="sm:max-w-md bg-card" @pointerDownOutside.prevent>
@@ -251,6 +252,7 @@ function handleStart() {
       </div>
     </div>
   </div>
+  </div>
 </template>
 
 <style scoped>
@@ -321,8 +323,9 @@ function handleStart() {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  min-width: 500px;
   margin: 0 auto;
+  width: 100%;
+  max-width: 500px;
 }
 
 .config-card {
@@ -456,5 +459,33 @@ function handleStart() {
 
 .start-btn:hover {
   background: #A6845E;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 500px) {
+  .page {
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .card {
+    border-radius: 0;
+    padding: 24px 16px;
+    min-height: 100vh;
+    box-shadow: none;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .config-card {
+    padding: 14px 16px;
+  }
+
+  .start-btn {
+    width: 100%;
+    padding: 14px 24px;
+  }
 }
 </style>

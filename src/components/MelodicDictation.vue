@@ -553,6 +553,7 @@ function getNoteSolfege(index) {
 </script>
 
 <template>
+  <div>
   <!-- Settings Modal -->
   <Dialog :open="showSettings" @update:open="(val) => showSettings = val">
     <DialogContent class="sm:max-w-md bg-card" @pointerDownOutside.prevent>
@@ -706,6 +707,7 @@ function getNoteSolfege(index) {
         </button>
       </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -1083,7 +1085,7 @@ function getNoteSolfege(index) {
   display: flex;
   gap: 8px;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .solfege-btn {
@@ -1097,6 +1099,33 @@ function getNoteSolfege(index) {
   cursor: pointer;
   transition: all 0.2s;
   min-width: 60px;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 500px) {
+  .page {
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .card {
+    border-radius: 0;
+    padding: 24px 16px;
+    min-height: 100vh;
+    box-shadow: none;
+  }
+
+  .solfege-buttons {
+    gap: 4px;
+  }
+
+  .solfege-btn {
+    padding: 12px 4px;
+    font-size: 0.85rem;
+    min-width: 0;
+    flex: 1;
+    border-radius: 6px;
+  }
 }
 
 .solfege-btn:hover:not(:disabled) {

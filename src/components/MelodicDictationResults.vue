@@ -213,4 +213,23 @@ function handleHome() {
 .secondary-btn:hover {
   background: #F0EBE5;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 500px) {
+  .page {
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .card {
+    border-radius: 0;
+    padding: 48px 16px;
+    min-height: 100vh;
+    box-shadow: none;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+}
 </style>

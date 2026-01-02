@@ -2,7 +2,11 @@
 </script>
 
 <template>
-  <router-view />
+  <router-view v-slot="{ Component }">
+    <Transition name="fade" mode="out-in">
+      <component :is="Component" />
+    </Transition>
+  </router-view>
 </template>
 
 <style>
@@ -13,6 +17,16 @@
 }
 
 body {
-  background: #f9f9f9;
+  background: #e8e4e0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

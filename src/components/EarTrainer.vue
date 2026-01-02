@@ -233,6 +233,7 @@ function getButtonClass(index) {
 </script>
 
 <template>
+  <div>
   <SetupModal :open="showSetup" @start="handleSetupStart" @close="showSetup = false" />
 
   <div class="page">
@@ -314,6 +315,7 @@ function getButtonClass(index) {
         </button>
       </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -442,7 +444,7 @@ function getButtonClass(index) {
   display: flex;
   gap: 8px;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .solfege-btn {
@@ -457,6 +459,25 @@ function getButtonClass(index) {
   transition: all 0.2s;
   min-width: 60px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Mobile responsive styles */
+@media (max-width: 500px) {
+  .card {
+    padding: 24px 16px;
+  }
+
+  .solfege-buttons {
+    gap: 4px;
+  }
+
+  .solfege-btn {
+    padding: 12px 4px;
+    font-size: 0.85rem;
+    min-width: 0;
+    flex: 1;
+    border-radius: 6px;
+  }
 }
 
 .solfege-btn:hover {
