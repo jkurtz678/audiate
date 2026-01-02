@@ -27,6 +27,7 @@ export function usePiano() {
 
   let sampler = null
   let limiter = null
+  let gain = null
 
   async function initPiano() {
     if (sampler) return
@@ -34,6 +35,9 @@ export function usePiano() {
     return new Promise((resolve) => {
       // Light limiter just to prevent clipping
       limiter = new Tone.Limiter(-1).toDestination()
+
+      // Gain stage to boost overall volume (+6dB ≈ 2x louder)
+      gain = new Tone.Gain(6, 'decibels').connect(limiter)
 
       sampler = new Tone.Sampler({
         urls: {
@@ -65,7 +69,7 @@ export function usePiano() {
           isLoaded.value = true
           resolve()
         },
-      }).connect(limiter)
+      }).connect(gain)
     })
   }
 
