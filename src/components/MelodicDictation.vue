@@ -1146,8 +1146,10 @@ function getNoteSolfege(index) {
   }
 }
 
-.solfege-btn:hover:not(:disabled) {
-  background: #F0EBE5;
+@media (hover: hover) {
+  .solfege-btn:hover:not(:disabled) {
+    background: #F0EBE5;
+  }
 }
 
 .solfege-btn:disabled {

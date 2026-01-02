@@ -480,9 +480,11 @@ function getButtonClass(index) {
   }
 }
 
-.solfege-btn:hover {
-  border-color: #B8956D;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+@media (hover: hover) {
+  .solfege-btn:hover {
+    border-color: #B8956D;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
 }
 
 .solfege-btn.correct,
