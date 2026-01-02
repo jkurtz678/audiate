@@ -1216,8 +1216,8 @@ function getNoteSolfege(index) {
 
 .slider {
   width: 100%;
-  height: 6px;
-  border-radius: 3px;
+  height: 8px;
+  border-radius: 4px;
   background: #e0dcd8;
   outline: none;
   -webkit-appearance: none;
@@ -1225,9 +1225,18 @@ function getNoteSolfege(index) {
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
-  padding: 10px 0;
-  margin: -10px 0;
-  background-clip: content-box;
+}
+
+.slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 4px;
+  background: #e0dcd8;
+}
+
+.slider::-moz-range-track {
+  height: 8px;
+  border-radius: 4px;
+  background: #e0dcd8;
 }
 
 .slider::-webkit-slider-thumb {
@@ -1239,6 +1248,7 @@ function getNoteSolfege(index) {
   background: #B8956D;
   cursor: pointer;
   transition: all 0.2s;
+  margin-top: -5px;
 }
 
 .slider::-webkit-slider-thumb:hover {
