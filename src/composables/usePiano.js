@@ -42,11 +42,11 @@ export function usePiano() {
     // Create a limiter to prevent clipping when multiple notes play together
     if (!limiter) {
       limiter = audioContext.createDynamicsCompressor()
-      limiter.threshold.value = -6
-      limiter.knee.value = 3
-      limiter.ratio.value = 20
-      limiter.attack.value = 0.001
-      limiter.release.value = 0.1
+      limiter.threshold.value = -1
+      limiter.knee.value = 12
+      limiter.ratio.value = 4
+      limiter.attack.value = 0.002
+      limiter.release.value = 0.4
       limiter.connect(audioContext.destination)
     }
 

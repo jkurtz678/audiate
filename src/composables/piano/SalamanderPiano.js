@@ -2,9 +2,9 @@ import { SplendidGrandPiano } from 'smplr'
 
 // Hardcoded settings for Salamander Grand Piano
 // These are tuned for a warm, soft sound with proper velocity layers
-const CHORD_VELOCITY = 22    // Soft chords (0-127 MIDI range)
-const NOTE_VELOCITY = 35     // Medium-soft single notes
-const VOLUME = 80          // 0-127
+const CHORD_VELOCITY = 50    // Soft-medium chords
+const NOTE_VELOCITY = 70     // Medium single notes
+const VOLUME = 40          // Middle ground volume
 
 export class SalamanderPiano {
   static id = 'salamander'

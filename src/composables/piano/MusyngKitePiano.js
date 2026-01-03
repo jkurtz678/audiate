@@ -4,7 +4,7 @@ import * as Tone from 'tone'
 // Note: MusyngKite samples are single-velocity, so velocity only affects volume
 const CHORD_VELOCITY = 0.25   // Tone.js uses 0-1 range
 const NOTE_VELOCITY = 0.45
-const GAIN_DB = 12            // Boost volume to match Salamander levels
+const GAIN_DB = 2            // Reduced boost to match Salamander levels
 
 // MusyngKite sample URLs (CDN hosted)
 const SAMPLE_BASE_URL = 'https://gleitz.github.io/midi-js-soundfonts/MusyngKite/acoustic_grand_piano-mp3/'
