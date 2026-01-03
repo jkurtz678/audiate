@@ -29,6 +29,7 @@ export function usePiano() {
   let limiter = null
   let gain = null
   let playbackTimeoutId = null
+  let visibilityListenerAdded = false
 
   async function initPiano() {
     if (sampler) return
@@ -74,6 +75,13 @@ export function usePiano() {
     })
   }
 
+  // Resume audio context when app returns from background (iOS suspends it)
+  function handleVisibilityChange() {
+    if (document.visibilityState === 'visible' && Tone.context.state === 'suspended') {
+      Tone.context.resume()
+    }
+  }
+
   async function startAudioContext() {
     // On iOS Safari 16.4+, use the audioSession API to bypass silent mode
     if ('audioSession' in navigator) {
@@ -100,6 +108,12 @@ export function usePiano() {
     // If still suspended, browser blocked autoplay
     if (Tone.context.state !== 'running') {
       return false
+    }
+
+    // Add visibility listener to resume audio when returning from background (iOS)
+    if (!visibilityListenerAdded) {
+      document.addEventListener('visibilitychange', handleVisibilityChange)
+      visibilityListenerAdded = true
     }
 
     await initPiano()

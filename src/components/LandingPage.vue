@@ -100,7 +100,7 @@ function goToStats() {
 .options {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   max-width: 360px;
   margin: 0 auto;
 }
