@@ -21,6 +21,7 @@ const {
   isLoaded,
   isPlaying,
   startAudioContext,
+  stopPlayback,
   playCadenceAndNote,
   playNoteOnly,
   playScaleNote,
@@ -208,6 +209,9 @@ function handleGuess(index) {
   const isCorrect = index === currentNoteIndex.value || isTonicMatch
 
   if (isCorrect) {
+    // Stop any ongoing playback immediately
+    stopPlayback()
+
     feedbackType.value = 'correct'
     if (!hasGuessedThisRound.value) {
       correctCount.value++

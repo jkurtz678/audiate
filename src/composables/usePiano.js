@@ -28,6 +28,7 @@ export function usePiano() {
   let sampler = null
   let limiter = null
   let gain = null
+  let playbackTimeoutId = null
 
   async function initPiano() {
     if (sampler) return
@@ -109,6 +110,22 @@ export function usePiano() {
     return ALL_KEYS[Math.floor(Math.random() * ALL_KEYS.length)]
   }
 
+  function stopPlayback() {
+    // Cancel all scheduled Transport events (future notes)
+    Tone.Transport.cancel()
+    Tone.Transport.stop()
+    Tone.Transport.position = 0
+
+    if (playbackTimeoutId) {
+      clearTimeout(playbackTimeoutId)
+      playbackTimeoutId = null
+    }
+    if (sampler) {
+      sampler.releaseAll()
+    }
+    isPlaying.value = false
+  }
+
   function getScaleNotes(key, mode, octave = 4) {
     const scaleType = mode === 'major' ? 'major' : 'minor'
     const scale = Scale.get(`${key} ${scaleType}`)
@@ -183,24 +200,42 @@ export function usePiano() {
     const chordDuration = 0.5
     const chordGap = 0.6
 
-    let time = Tone.now()
+    // Cancel any previously scheduled events and reset transport
+    Tone.Transport.cancel()
+    Tone.Transport.stop()
+    Tone.Transport.position = 0
 
+    let offset = 0
+
+    // Schedule cadence chords on Transport
     for (const chord of cadence) {
-      chord.forEach(note => {
-        sampler.triggerAttackRelease(note, chordDuration, time, 0.25)
-      })
-      time += chordGap
+      const chordOffset = offset
+      Tone.Transport.schedule((time) => {
+        chord.forEach(note => {
+          sampler.triggerAttackRelease(note, chordDuration, time, 0.25)
+        })
+      }, chordOffset)
+      offset += chordGap
     }
 
-    time += 0.3
+    offset += 0.3
 
+    // Schedule mystery note
     const mysteryNote = scaleNotes[noteIndex]
-    sampler.triggerAttackRelease(mysteryNote, 1, time, 0.45)
+    Tone.Transport.schedule((time) => {
+      sampler.triggerAttackRelease(mysteryNote, 1, time, 0.45)
+    }, offset)
+
+    // Start the transport
+    Tone.Transport.start()
 
     // Account for release time (1s) in addition to note duration
-    const totalDuration = (cadence.length * chordGap) + 0.3 + 1 + 1
-    setTimeout(() => {
+    const totalDuration = offset + 1 + 1
+    playbackTimeoutId = setTimeout(() => {
+      Tone.Transport.stop()
+      Tone.Transport.position = 0
       isPlaying.value = false
+      playbackTimeoutId = null
     }, totalDuration * 1000)
   }
 
@@ -216,17 +251,29 @@ export function usePiano() {
       const chordDuration = 0.5
       const chordGap = 0.6
 
-      let time = Tone.now()
+      // Cancel any previously scheduled events and reset transport
+      Tone.Transport.cancel()
+      Tone.Transport.stop()
+      Tone.Transport.position = 0
+
+      let offset = 0
 
       for (const chord of cadence) {
-        chord.forEach(note => {
-          sampler.triggerAttackRelease(note, chordDuration, time, 0.25)
-        })
-        time += chordGap
+        const chordOffset = offset
+        Tone.Transport.schedule((time) => {
+          chord.forEach(note => {
+            sampler.triggerAttackRelease(note, chordDuration, time, 0.25)
+          })
+        }, chordOffset)
+        offset += chordGap
       }
+
+      Tone.Transport.start()
 
       const totalDuration = cadence.length * chordGap
       setTimeout(() => {
+        Tone.Transport.stop()
+        Tone.Transport.position = 0
         resolve()
       }, totalDuration * 1000)
     })
@@ -236,13 +283,27 @@ export function usePiano() {
     if (!isLoaded.value || isPlaying.value) return
 
     isPlaying.value = true
+
+    // Cancel any previously scheduled events and reset transport
+    Tone.Transport.cancel()
+    Tone.Transport.stop()
+    Tone.Transport.position = 0
+
     const scaleNotes = getScaleNotes(key, mode, octave)
     const note = scaleNotes[noteIndex]
-    sampler.triggerAttackRelease(note, 1, Tone.now(), 0.45)
+
+    Tone.Transport.schedule((time) => {
+      sampler.triggerAttackRelease(note, 1, time, 0.45)
+    }, 0)
+
+    Tone.Transport.start()
 
     // Account for note duration + release time
-    setTimeout(() => {
+    playbackTimeoutId = setTimeout(() => {
+      Tone.Transport.stop()
+      Tone.Transport.position = 0
       isPlaying.value = false
+      playbackTimeoutId = null
     }, 2000) // 1s duration + 1s release
   }
 
@@ -283,6 +344,7 @@ export function usePiano() {
     currentKey,
     currentMode,
     startAudioContext,
+    stopPlayback,
     playCadenceAndNote,
     playCadenceOnly,
     playNoteOnly,
