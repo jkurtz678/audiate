@@ -255,7 +255,17 @@ export function usePiano() {
   }
 
   function getRandomNoteIndex() {
-    return Math.floor(Math.random() * 8)
+    // 7 unique scale degrees, but 8 indices (0-7)
+    // Index 0 and 7 are both tonic (Do in major, La in minor)
+    // Give each scale degree equal 1/7 probability
+    const degree = Math.floor(Math.random() * 7)
+
+    if (degree === 0) {
+      // Tonic - randomly choose low (0) or high (7)
+      return Math.random() < 0.5 ? 0 : 7
+    }
+
+    return degree
   }
 
   function getSolfege(mode) {
