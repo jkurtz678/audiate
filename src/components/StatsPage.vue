@@ -27,20 +27,65 @@ const hasData = computed(() => {
   return noteStats.value.some(n => n.total > 0)
 })
 
-// Get max total for scaling bars
-const maxTotal = computed(() => {
-  const max = Math.max(...noteStats.value.map(n => n.total))
-  return max > 0 ? max : 1
-})
-
-function getBarWidth(note) {
+function getPercentage(note) {
   if (note.total === 0) return 0
-  return (note.total / maxTotal.value) * 100
+  return Math.round((note.correct / note.total) * 100)
 }
 
-function getCorrectWidth(note) {
-  if (note.total === 0) return 0
-  return (note.correct / note.total) * 100
+// Get min/max percentages for relative coloring
+const percentageRange = computed(() => {
+  const notesWithData = noteStats.value.filter(n => n.total > 0)
+  if (notesWithData.length === 0) return { min: 0, max: 100 }
+
+  const percentages = notesWithData.map(n => getPercentage(n))
+  return {
+    min: Math.min(...percentages),
+    max: Math.max(...percentages)
+  }
+})
+
+function getBarColor(note) {
+  const pct = getPercentage(note)
+  if (note.total === 0) return 'transparent'
+
+  const { min, max } = percentageRange.value
+
+  // If all notes have the same percentage, use a neutral gold color
+  if (min === max) {
+    return 'rgb(196, 170, 80)' // gold
+  }
+
+  // Normalize to 0-1 based on the data range
+  const normalized = (pct - min) / (max - min)
+
+  // Color stops: 0 = deep coral, 0.5 = warm orange, 0.8 = gold, 1 = fresh green
+  const deepRed = { r: 198, g: 78, b: 78 }    // #C64E4E
+  const orange = { r: 218, g: 140, b: 75 }    // #DA8C4B
+  const gold = { r: 196, g: 170, b: 80 }      // #C4AA50
+  const green = { r: 74, g: 168, b: 110 }     // #4AA86E
+
+  let r, g, b
+  if (normalized <= 0.5) {
+    // Deep red to orange
+    const t = normalized / 0.5
+    r = Math.round(deepRed.r + (orange.r - deepRed.r) * t)
+    g = Math.round(deepRed.g + (orange.g - deepRed.g) * t)
+    b = Math.round(deepRed.b + (orange.b - deepRed.b) * t)
+  } else if (normalized <= 0.8) {
+    // Orange to gold
+    const t = (normalized - 0.5) / 0.3
+    r = Math.round(orange.r + (gold.r - orange.r) * t)
+    g = Math.round(orange.g + (gold.g - orange.g) * t)
+    b = Math.round(orange.b + (gold.b - orange.b) * t)
+  } else {
+    // Gold to green
+    const t = (normalized - 0.8) / 0.2
+    r = Math.round(gold.r + (green.r - gold.r) * t)
+    g = Math.round(gold.g + (green.g - gold.g) * t)
+    b = Math.round(gold.b + (green.b - gold.b) * t)
+  }
+
+  return `rgb(${r}, ${g}, ${b})`
 }
 </script>
 
@@ -135,18 +180,12 @@ function getCorrectWidth(note) {
                 <div class="chart-bar-container">
                   <div
                     class="chart-bar"
-                    :style="{ width: getBarWidth(note) + '%' }"
-                  >
-                    <div
-                      class="chart-bar-correct"
-                      :style="{ width: getCorrectWidth(note) + '%' }"
-                    ></div>
-                  </div>
+                    :style="{ width: getPercentage(note) + '%', backgroundColor: getBarColor(note) }"
+                  ></div>
                 </div>
                 <div class="chart-value">
                   <span v-if="note.total > 0">
-                    {{ note.correct }}/{{ note.total }}
-                    <span class="chart-percent">({{ Math.round((note.correct / note.total) * 100) }}%)</span>
+                    {{ getPercentage(note) }}% <span class="chart-count">({{ note.correct }}/{{ note.total }})</span>
                   </span>
                   <span v-else class="no-data">-</span>
                 </div>
@@ -159,29 +198,6 @@ function getCorrectWidth(note) {
             </div>
           </div>
 
-          <!-- Legend (desktop) -->
-          <div v-if="hasData" class="legend legend-desktop">
-            <div class="legend-item">
-              <div class="legend-color correct"></div>
-              <span>Correct</span>
-            </div>
-            <div class="legend-item">
-              <div class="legend-color incorrect"></div>
-              <span>Incorrect</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Legend (mobile) -->
-      <div v-if="hasData" class="legend legend-mobile">
-        <div class="legend-item">
-          <div class="legend-color correct"></div>
-          <span>Correct</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-color incorrect"></div>
-          <span>Incorrect</span>
         </div>
       </div>
     </div>
@@ -376,7 +392,6 @@ function getCorrectWidth(note) {
   border-radius: 8px;
   padding: 16px 20px;
   width: 100%;
-  margin-bottom: 12px;
 }
 
 .chart-row {
@@ -404,16 +419,9 @@ function getCorrectWidth(note) {
 
 .chart-bar {
   height: 100%;
-  background: #CC5A5A;
   border-radius: 4px;
-  transition: width 0.3s ease;
+  transition: width 0.3s ease, background-color 0.3s ease;
   min-width: 0;
-}
-
-.chart-bar-correct {
-  height: 100%;
-  background: #4A9D68;
-  border-radius: 4px 0 0 4px;
 }
 
 .chart-value {
@@ -425,9 +433,8 @@ function getCorrectWidth(note) {
   white-space: nowrap;
 }
 
-.chart-percent {
+.chart-count {
   color: #999;
-  margin-left: 2px;
 }
 
 .chart-value .no-data {
@@ -453,42 +460,6 @@ function getCorrectWidth(note) {
   margin: 0;
 }
 
-.legend {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-}
-
-.legend-desktop {
-  display: flex;
-}
-
-.legend-mobile {
-  display: none;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: #666;
-  font-weight: 300;
-}
-
-.legend-color {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-}
-
-.legend-color.correct {
-  background: #4A9D68;
-}
-
-.legend-color.incorrect {
-  background: #CC5A5A;
-}
 
 /* Tablet/smaller desktop - stack but keep wider card */
 @media (max-width: 768px) {
@@ -520,13 +491,6 @@ function getCorrectWidth(note) {
     display: none;
   }
 
-  .legend-desktop {
-    display: none;
-  }
-
-  .legend-mobile {
-    display: flex;
-  }
   .summary {
     gap: 20px;
   }
