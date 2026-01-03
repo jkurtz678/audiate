@@ -513,7 +513,7 @@ function handleGuess(guessIndex) {
       // Calculate thinking time (time from note played to guess made)
       const notePlayedTime = notePlayedTimes.value[currentGuessIndex.value]
       const thinkingTime = notePlayedTime ? Date.now() - notePlayedTime : null
-      recordStat('melodicDictation', cadenceType.value, correctNoteIndex, true, noteOctave, thinkingTime)
+      recordStat('melodicDictation', cadenceType.value, correctNoteIndex, true, noteOctave, thinkingTime, currentKey.value, null)
       currentGuessIndex.value++
     }
 
@@ -530,7 +530,7 @@ function handleGuess(guessIndex) {
       // Calculate thinking time (time from note played to guess made)
       const notePlayedTime = notePlayedTimes.value[currentGuessIndex.value]
       const thinkingTime = notePlayedTime ? Date.now() - notePlayedTime : null
-      recordStat('melodicDictation', cadenceType.value, correctNoteIndex, false, noteOctave, thinkingTime)
+      recordStat('melodicDictation', cadenceType.value, correctNoteIndex, false, noteOctave, thinkingTime, currentKey.value, guessIndex)
       guesses.value[currentGuessIndex.value] = { guessedCorrectly: false, hasGuessed: true }
     }
 

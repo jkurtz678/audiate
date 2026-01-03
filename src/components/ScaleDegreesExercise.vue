@@ -217,7 +217,7 @@ function handleGuess(index) {
       correctCount.value++
       // Calculate thinking time (time from note played to guess made)
       const thinkingTime = notePlayedAt.value ? Date.now() - notePlayedAt.value : null
-      recordStat('scaleDegrees', cadenceType.value, currentNoteIndex.value, true, currentOctave.value, thinkingTime)
+      recordStat('scaleDegrees', cadenceType.value, currentNoteIndex.value, true, currentOctave.value, thinkingTime, currentKey.value, null)
     }
 
     const moveToNext = async () => {
@@ -251,7 +251,7 @@ function handleGuess(index) {
       incorrectCount.value++
       // Calculate thinking time (time from note played to guess made)
       const thinkingTime = notePlayedAt.value ? Date.now() - notePlayedAt.value : null
-      recordStat('scaleDegrees', cadenceType.value, currentNoteIndex.value, false, currentOctave.value, thinkingTime)
+      recordStat('scaleDegrees', cadenceType.value, currentNoteIndex.value, false, currentOctave.value, thinkingTime, currentKey.value, index)
       hasGuessedThisRound.value = true
     }
     setTimeout(() => {

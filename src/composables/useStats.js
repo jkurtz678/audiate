@@ -125,8 +125,10 @@ function saveStats(stats) {
  * @param {boolean} correct - whether the first guess was correct
  * @param {string} octave - 'low', 'middle', or 'high'
  * @param {number|null} thinkingTime - milliseconds from note heard to guess made (optional)
+ * @param {string|null} key - the key of the question (e.g., 'C', 'F#') (optional)
+ * @param {number|null} firstWrongAnswer - noteIndex of first wrong guess, only when correct is false (optional)
  */
-function recordStat(exercise, mode, noteIndex, correct, octave, thinkingTime = null) {
+function recordStat(exercise, mode, noteIndex, correct, octave, thinkingTime = null, key = null, firstWrongAnswer = null) {
   const stats = getStats()
 
   stats.attempts.push({
@@ -136,7 +138,9 @@ function recordStat(exercise, mode, noteIndex, correct, octave, thinkingTime = n
     noteIndex,
     octave,
     correct,
-    thinkingTime
+    thinkingTime,
+    key,
+    firstWrongAnswer: correct ? null : firstWrongAnswer
   })
 
   saveStats(stats)
