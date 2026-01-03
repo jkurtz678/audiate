@@ -418,7 +418,7 @@ function handleStart() {
 }
 
 .card {
-  background: #f5f3f0;
+  background: linear-gradient(180deg, #f5f3f0 0%, #ebe7e3 100%);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   padding: 32px;
@@ -463,7 +463,8 @@ function handleStart() {
 .title {
   font-size: 1.75rem;
   margin: 0 0 8px 0;
-  font-weight: 500;
+  font-weight: 300;
+  color: #3d3d3d;
 }
 
 .subtitle {

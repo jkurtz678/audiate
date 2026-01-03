@@ -36,8 +36,8 @@ export function usePiano() {
       // Light limiter just to prevent clipping
       limiter = new Tone.Limiter(-1).toDestination()
 
-      // Gain stage to boost overall volume (+6dB ≈ 2x louder)
-      gain = new Tone.Gain(6, 'decibels').connect(limiter)
+      // Gain stage to boost overall volume (+12dB ≈ 4x louder)
+      gain = new Tone.Gain(12, 'decibels').connect(limiter)
 
       sampler = new Tone.Sampler({
         urls: {
@@ -187,7 +187,7 @@ export function usePiano() {
 
     for (const chord of cadence) {
       chord.forEach(note => {
-        sampler.triggerAttackRelease(note, chordDuration, time, 0.4)
+        sampler.triggerAttackRelease(note, chordDuration, time, 0.25)
       })
       time += chordGap
     }
@@ -195,7 +195,7 @@ export function usePiano() {
     time += 0.3
 
     const mysteryNote = scaleNotes[noteIndex]
-    sampler.triggerAttackRelease(mysteryNote, 1, time, 0.7)
+    sampler.triggerAttackRelease(mysteryNote, 1, time, 0.45)
 
     // Account for release time (1s) in addition to note duration
     const totalDuration = (cadence.length * chordGap) + 0.3 + 1 + 1
@@ -220,7 +220,7 @@ export function usePiano() {
 
       for (const chord of cadence) {
         chord.forEach(note => {
-          sampler.triggerAttackRelease(note, chordDuration, time, 0.4)
+          sampler.triggerAttackRelease(note, chordDuration, time, 0.25)
         })
         time += chordGap
       }
@@ -238,7 +238,7 @@ export function usePiano() {
     isPlaying.value = true
     const scaleNotes = getScaleNotes(key, mode, octave)
     const note = scaleNotes[noteIndex]
-    sampler.triggerAttackRelease(note, 1, Tone.now(), 0.7)
+    sampler.triggerAttackRelease(note, 1, Tone.now(), 0.45)
 
     // Account for note duration + release time
     setTimeout(() => {
@@ -251,7 +251,7 @@ export function usePiano() {
 
     const scaleNotes = getScaleNotes(key, mode, octave)
     const note = scaleNotes[noteIndex]
-    sampler.triggerAttackRelease(note, duration, Tone.now(), 0.7)
+    sampler.triggerAttackRelease(note, duration, Tone.now(), 0.45)
   }
 
   function getRandomNoteIndex() {

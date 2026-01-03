@@ -91,7 +91,7 @@ function handleHome() {
 }
 
 .card {
-  background: #f5f3f0;
+  background: linear-gradient(180deg, #f5f3f0 0%, #ebe7e3 100%);
   border-radius: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   padding: 48px 32px;

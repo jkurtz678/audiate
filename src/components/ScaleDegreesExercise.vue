@@ -187,7 +187,8 @@ async function playWalkSequence(sequence) {
   for (let i = 0; i < sequence.length; i++) {
     const noteIndex = sequence[i]
     walkHighlightIndex.value = noteIndex
-    const duration = i === 0 ? 0.6 : 0.3
+    const isFirstOrLast = i === 0 || i === sequence.length - 1
+    const duration = isFirstOrLast ? 0.6 : 0.3
     const delay = i === 0 ? noteDelay * 2 : noteDelay
     playScaleNote(noteIndex, currentKey.value, cadenceType.value, currentOctave.value, duration)
     if (i < sequence.length - 1) {
@@ -412,7 +413,7 @@ function handleSettingsDone() {
 }
 
 .card {
-  background: #f5f3f0;
+  background: linear-gradient(180deg, #f5f3f0 0%, #ebe7e3 100%);
   border-radius: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   padding: 32px;
@@ -474,7 +475,7 @@ function handleSettingsDone() {
 }
 
 .test-badge {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #888;
@@ -493,7 +494,7 @@ function handleSettingsDone() {
 /* Progress Display */
 .progress-display {
   margin-bottom: 32px;
-  width: 240px;
+  width: 310px;
 }
 
 .progress-bar-track {
@@ -519,12 +520,12 @@ function handleSettingsDone() {
 }
 
 .progress-text {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: #999;
 }
 
 .score-text {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 500;
 }
 
@@ -702,7 +703,7 @@ function handleSettingsDone() {
 
 /* Answer Label */
 .answer-label {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #888;

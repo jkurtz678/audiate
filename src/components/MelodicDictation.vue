@@ -664,22 +664,6 @@ function getNoteSolfege(index) {
           </div>
         </div>
 
-        <!-- Replay Orb -->
-        <div class="playback-controls-center">
-          <button
-            class="playback-orb"
-            :class="{ listening: isPlaying }"
-            @click="handleReplay"
-            title="Replay cadence and sequence"
-          >
-            <div v-if="isPlaying && !isPaused" class="wave-bars">
-              <div class="bar"></div>
-              <div class="bar"></div>
-              <div class="bar"></div>
-            </div>
-            <RotateCcw v-else :size="24" />
-          </button>
-        </div>
       </div>
 
       <!-- Note display -->
@@ -701,6 +685,23 @@ function getNoteSolfege(index) {
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Replay Orb -->
+      <div class="playback-controls-center">
+        <button
+          class="playback-orb"
+          :class="{ listening: isPlaying }"
+          @click="handleReplay"
+          title="Replay cadence and sequence"
+        >
+          <div v-if="isPlaying && !isPaused" class="wave-bars">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+          <RotateCcw v-else :size="24" />
+        </button>
       </div>
 
       <!-- Divider and Label -->
@@ -748,7 +749,7 @@ function getNoteSolfege(index) {
 }
 
 .card {
-  background: #f5f3f0;
+  background: linear-gradient(180deg, #f5f3f0 0%, #ebe7e3 100%);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   padding: 32px;
@@ -811,7 +812,7 @@ function getNoteSolfege(index) {
 }
 
 .test-badge {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #888;
@@ -830,7 +831,7 @@ function getNoteSolfege(index) {
 /* Progress Display */
 .progress-display {
   margin-bottom: 32px;
-  width: 240px;
+  width: 310px;
 }
 
 .progress-bar-track {
@@ -856,12 +857,12 @@ function getNoteSolfege(index) {
 }
 
 .progress-text {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: #999;
 }
 
 .score-text {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 500;
 }
 
@@ -878,8 +879,8 @@ function getNoteSolfege(index) {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
-  margin-top: 16px;
+  margin-bottom: 12px;
+  margin-top: 12px;
 }
 
 .playback-orb {
@@ -971,7 +972,7 @@ function getNoteSolfege(index) {
 .note-display-container {
   width: 100%;
   overflow-x: hidden;
-  padding: 24px 0;
+  padding: 16px 0;
 }
 
 .note-display {
@@ -1079,7 +1080,7 @@ function getNoteSolfege(index) {
 }
 
 .answer-label {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #888;

@@ -9,6 +9,7 @@
     /* Backgrounds */
     --background: 40 3% 89%; /* #E5E4E2 - warm gray */
     --card: 40 20% 97%; /* #FAF9F7 */
+    --card-gradient: linear-gradient(180deg, #f5f3f0 0%, #ebe7e3 100%);
     --popover: 40 20% 97%;
 
     /* Text */
