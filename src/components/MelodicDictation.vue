@@ -641,82 +641,85 @@ function getNoteSolfege(index) {
         </button>
       </div>
 
-      <!-- Center Content -->
-      <div class="center-content">
-        <!-- Test Badge (Settings Summary) -->
-        <div class="test-badge">
-          <template v-for="(part, index) in settingsSummaryParts" :key="index">
-            <span>{{ part }}</span>
-            <span v-if="index < settingsSummaryParts.length - 1" class="summary-separator"> · </span>
-          </template>
-        </div>
-
-        <!-- Progress Display -->
-        <div class="progress-display">
-          <div class="progress-bar-track">
-            <div class="progress-bar-fill" :style="{ width: progressPercentage + '%' }"></div>
+      <!-- Main Content (centered on mobile) -->
+      <div class="main-content">
+        <!-- Center Content -->
+        <div class="center-content">
+          <!-- Test Badge (Settings Summary) -->
+          <div class="test-badge">
+            <template v-for="(part, index) in settingsSummaryParts" :key="index">
+              <span>{{ part }}</span>
+              <span v-if="index < settingsSummaryParts.length - 1" class="summary-separator"> · </span>
+            </template>
           </div>
-          <div class="progress-meta">
-            <span class="progress-text">{{ isInfinite ? 'Infinite Mode' : `Question ${currentQuestionNumber} of ${numberOfQuestions}` }}</span>
-            <span class="score-text">
-              <span class="score-correct">{{ correctCount }}</span> / <span class="score-incorrect">{{ incorrectCount }}</span>
-            </span>
-          </div>
-        </div>
 
-      </div>
-
-      <!-- Note display -->
-      <div class="note-display-container">
-        <div class="note-display" ref="noteDisplayRef">
-          <div
-            v-for="(noteIndex, index) in visibleNotes"
-            :key="index"
-            class="note-wrapper"
-            :class="{ 'current': index === currentGuessIndex }"
-          >
-            <div class="arrow" v-if="index === currentGuessIndex">&#9660;</div>
-            <div v-else class="arrow-placeholder"></div>
-            <div class="quarter-note" :class="getNoteStatus(index)">
-              &#9833;
+          <!-- Progress Display -->
+          <div class="progress-display">
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" :style="{ width: progressPercentage + '%' }"></div>
             </div>
-            <div class="solfege-label">
-              {{ shouldShowSolfege(index) ? getNoteSolfege(index) : '?' }}
+            <div class="progress-meta">
+              <span class="progress-text">{{ isInfinite ? 'Infinite Mode' : `Question ${currentQuestionNumber} of ${numberOfQuestions}` }}</span>
+              <span class="score-text">
+                <span class="score-correct">{{ correctCount }}</span> / <span class="score-incorrect">{{ incorrectCount }}</span>
+              </span>
             </div>
           </div>
+
         </div>
-      </div>
 
-      <!-- Replay Orb -->
-      <div class="playback-controls-center">
-        <button
-          class="playback-orb"
-          :class="{ listening: isPlaying }"
-          @click="handleReplay"
-          title="Replay cadence and sequence"
-        >
-          <div v-if="isPlaying && !isPaused" class="wave-bars">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
+        <!-- Note display -->
+        <div class="note-display-container">
+          <div class="note-display" ref="noteDisplayRef">
+            <div
+              v-for="(noteIndex, index) in visibleNotes"
+              :key="index"
+              class="note-wrapper"
+              :class="{ 'current': index === currentGuessIndex }"
+            >
+              <div class="arrow" v-if="index === currentGuessIndex">&#9660;</div>
+              <div v-else class="arrow-placeholder"></div>
+              <div class="quarter-note" :class="getNoteStatus(index)">
+                &#9833;
+              </div>
+              <div class="solfege-label">
+                {{ shouldShowSolfege(index) ? getNoteSolfege(index) : '?' }}
+              </div>
+            </div>
           </div>
-          <RotateCcw v-else :size="24" />
-        </button>
-      </div>
+        </div>
 
-      <!-- Divider and Label -->
-      <div class="answer-section">
-        <div class="answer-label-row">
-          <div class="answer-label" :class="{ invisible: !hasPlayedFirstNote && !isSequenceComplete }">
-            {{ isSequenceComplete ? 'Sequence complete!' : 'Select each note you heard' }}
-          </div>
+        <!-- Replay Orb -->
+        <div class="playback-controls-center">
           <button
-            v-if="isSequenceComplete"
-            class="next-question-btn"
-            @click="handleNextQuestion"
+            class="playback-orb"
+            :class="{ listening: isPlaying }"
+            @click="handleReplay"
+            title="Replay cadence and sequence"
           >
-            Next Question
+            <div v-if="isPlaying && !isPaused" class="wave-bars">
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+            </div>
+            <RotateCcw v-else :size="24" />
           </button>
+        </div>
+
+        <!-- Divider and Label -->
+        <div class="answer-section">
+          <div class="answer-label-row">
+            <div class="answer-label" :class="{ invisible: !hasPlayedFirstNote && !isSequenceComplete }">
+              {{ isSequenceComplete ? 'Sequence complete!' : 'Select each note you heard' }}
+            </div>
+            <button
+              v-if="isSequenceComplete"
+              class="next-question-btn"
+              @click="handleNextQuestion"
+            >
+              Next Question
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1137,9 +1140,16 @@ function getNoteSolfege(index) {
 
   .card {
     border-radius: 0;
-    padding: 24px 16px;
+    padding: 24px 16px 48px 16px;
     min-height: 100vh;
     box-shadow: none;
+  }
+
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .solfege-buttons {

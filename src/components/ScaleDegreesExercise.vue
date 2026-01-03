@@ -759,9 +759,14 @@ function handleSettingsDone() {
 
   .card {
     border-radius: 0;
-    padding: 24px 16px;
+    padding: 24px 16px 48px 16px;
     min-height: 100vh;
     box-shadow: none;
+  }
+
+  .center-content {
+    flex: 1;
+    justify-content: center;
   }
 
   .playback-orb {
